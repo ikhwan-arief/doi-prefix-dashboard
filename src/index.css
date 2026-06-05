@@ -1,0 +1,44 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .animate-spin-slow {
+    animation: spin 10s linear infinite;
+  }
+}
+
+/* Custom styled scrollbars for a premium UI look */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #334155;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Set up the base font and variables */
+body {
+  font-family: "Inter", system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc; /* light slate bg */
+}
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: #020617; /* dark slate bg */
+  }
+}
