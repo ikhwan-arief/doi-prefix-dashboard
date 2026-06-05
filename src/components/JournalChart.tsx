@@ -114,7 +114,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
             <BarChart
               data={top20Data}
               layout="vertical"
-              margin={{ top: 5, right: 15, left: 10, bottom: 5 }}
+              margin={{ top: 5, right: 15, left: 20, bottom: 5 }}
             >
               <defs>
                 <linearGradient id="journalGradient" x1="0" y1="0" x2="1" y2="0">
@@ -141,7 +141,8 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                 dataKey="journal"
                 stroke="#94a3b8"
                 fontSize={11}
-                width={180}
+                width={225}
+                interval={0}
                 tickLine={false}
                 axisLine={false}
                 tick={<CustomYAxisTick />}
