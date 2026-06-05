@@ -7,6 +7,8 @@ import { useEffect, useState, useMemo } from "react";
 import { fetchDashboardData, type DashboardDataset } from "./lib/data";
 import { exportArticlesToCSV } from "./lib/csv";
 import { SummaryCards } from "./components/SummaryCards";
+import { RatioMetricsCards } from "./components/RatioMetricsCards";
+import { JournalSidebar } from "./components/JournalSidebar";
 import { FilterBar } from "./components/FilterBar";
 import { YearChart } from "./components/YearChart";
 import { JournalChart } from "./components/JournalChart";
@@ -207,6 +209,11 @@ function App() {
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
         
+        {/* Ratio/Average Citation Metrics */}
+        <section>
+          <RatioMetricsCards articles={dataset.articles} />
+        </section>
+
         {/* Key Indicators */}
         <section>
           <SummaryCards summary={dataset.summary} />
@@ -238,12 +245,21 @@ function App() {
           />
         </section>
 
-        {/* Articles Data Grid */}
-        <section>
-          <ArticleTable
-            data={filteredArticles}
-            onViewDetails={setSelectedArticle}
-          />
+        {/* Articles Section with Journal Sidebar */}
+        <section className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
+          <div className="lg:col-span-1">
+            <JournalSidebar
+              articles={dataset.articles}
+              selectedJournal={selectedJournal}
+              onSelectJournal={setSelectedJournal}
+            />
+          </div>
+          <div className="lg:col-span-3">
+            <ArticleTable
+              data={filteredArticles}
+              onViewDetails={setSelectedArticle}
+            />
+          </div>
         </section>
 
       </main>

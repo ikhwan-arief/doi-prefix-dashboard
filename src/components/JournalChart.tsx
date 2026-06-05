@@ -47,6 +47,37 @@ const getJournalUrl = (name: string) => {
   return `https://ejournal.unand.ac.id/`;
 };
 
+const formatJournalTick = (tick: string) => {
+  if (tick.length > 35) {
+    return `${tick.substring(0, 32)}...`;
+  }
+  return tick;
+};
+
+const CustomYAxisTick = (props: any) => {
+  const { x, y, payload } = props;
+  const name = payload.value;
+  const url = getJournalUrl(name);
+  const formattedName = formatJournalTick(name);
+  
+  return (
+    <g transform={`translate(${x},${y})`}>
+      <a href={url} target="_blank" rel="noopener noreferrer">
+        <text
+          x={-10}
+          y={4}
+          textAnchor="end"
+          fontSize={11}
+          className="fill-slate-500 dark:fill-slate-400 hover:fill-indigo-600 dark:hover:fill-indigo-400 hover:font-bold transition-all duration-150 cursor-pointer select-none"
+          style={{ cursor: "pointer" }}
+        >
+          {formattedName}
+        </text>
+      </a>
+    </g>
+  );
+};
+
 interface JournalChartProps {
   data: ByJournalData[];
 }
@@ -54,13 +85,6 @@ interface JournalChartProps {
 export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
   // Take top 20 journals by default as requested
   const top20Data = data.slice(0, 20);
-
-  const formatJournalTick = (tick: string) => {
-    if (tick.length > 35) {
-      return `${tick.substring(0, 32)}...`;
-    }
-    return tick;
-  };
 
   const handleBarClick = (entry: any) => {
     if (entry && entry.journal) {
@@ -76,11 +100,11 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
           Top Journals
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Distribution across top 20 journals by article count (Click bar to open website)
+          Distribution across top 20 journals by article count (Click label or bar to open website)
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 w-full">
+      <div className="h-[550px] w-full">
         {top20Data.length === 0 ? (
           <div className="h-full flex items-center justify-center text-slate-400 text-sm">
             No journal data available
@@ -117,10 +141,10 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                 dataKey="journal"
                 stroke="#94a3b8"
                 fontSize={11}
-                tickFormatter={formatJournalTick}
                 width={180}
                 tickLine={false}
                 axisLine={false}
+                tick={<CustomYAxisTick />}
               />
               <Tooltip
                 cursor={{ fill: "rgba(99, 102, 241, 0.08)" }}
@@ -135,7 +159,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                           {payload[0].value} Publications
                         </p>
                         <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 border-t border-slate-100 dark:border-slate-800 pt-1.5 italic">
-                          Click bar to open journal website ↗
+                          Click label or bar to open journal website ↗
                         </p>
                       </div>
                     );

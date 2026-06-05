@@ -38,7 +38,7 @@ export const YearChart: React.FC<YearChartProps> = ({ data }) => {
         </p>
       </div>
 
-      <div className="flex-1 min-h-0 w-full">
+      <div className="h-[260px] w-full">
         {sortedData.length === 0 ? (
           <div className="h-full flex items-center justify-center text-slate-400 text-sm">
             No year data available
