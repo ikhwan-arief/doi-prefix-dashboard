@@ -52,7 +52,42 @@ export async function fetchDashboardData(): Promise<DashboardDataset> {
       }),
     ]);
 
-    return { articles, summary, byYear, byJournal, filters, syncLog };
+    const decodeHtmlEntities = (str?: string): string => {
+      if (!str) return "";
+      return str
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">")
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'")
+        .replace(/&apos;/g, "'");
+    };
+
+    const decodedArticles = articles.map((art) => ({
+      ...art,
+      journal: decodeHtmlEntities(art.journal),
+      title: decodeHtmlEntities(art.title),
+      publisher: decodeHtmlEntities(art.publisher),
+    }));
+
+    const decodedByJournal = byJournal.map((item) => ({
+      ...item,
+      journal: decodeHtmlEntities(item.journal),
+    }));
+
+    const decodedFilters = {
+      ...filters,
+      journals: filters.journals.map(decodeHtmlEntities),
+    };
+
+    return {
+      articles: decodedArticles,
+      summary,
+      byYear,
+      byJournal: decodedByJournal,
+      filters: decodedFilters,
+      syncLog,
+    };
   } catch (error) {
     console.error("Failed to load static JSON files:", error);
     throw new Error(
