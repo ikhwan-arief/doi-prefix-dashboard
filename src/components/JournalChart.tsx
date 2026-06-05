@@ -15,6 +15,38 @@ import {
 } from "recharts";
 import type { ByJournalData } from "../lib/types";
 
+const journalUrls: Record<string, string> = {
+  "jurnal fisika unand": "https://jfu.fmipa.unand.ac.id/",
+  "jurnal sains farmasi & klinis": "http://jsfk.ffarmasi.unand.ac.id/",
+  "jurnal optimasi sistem industri": "http://josi.ft.unand.ac.id/",
+  "majalah kedokteran andalas": "http://jurnalmka.fk.unand.ac.id/",
+  "jurnal nasional teknik elektro": "https://jnte.ft.unand.ac.id/",
+  "jurnal kesehatan andalas": "http://jurnal.fk.unand.ac.id/",
+  "logista": "http://logista.fateta.unand.ac.id/",
+  "logista - jurnal ilmiah pengabdian kepada masyarakat": "http://logista.fateta.unand.ac.id/",
+  "teknosi": "https://teknosi.fti.unand.ac.id/",
+  "jurnal nasional teknologi dan sistem informasi": "https://teknosi.fti.unand.ac.id/",
+  "buletin ilmiah nagari": "https://buletinnagari.lppm.unand.ac.id",
+  "buletin ilmiah nagari membangun": "https://buletinnagari.lppm.unand.ac.id",
+  "jurnal ilmu fisika": "https://jif.fmipa.unand.ac.id",
+  "jurnal ilmu kesehatan indonesia": "https://jikesi.fk.unand.ac.id",
+  "jurnal ilmu kesehatan": "https://jikesi.fk.unand.ac.id",
+  "jurnal arbitrer": "https://arbitrer.fib.unand.ac.id/",
+  "arbitrer": "https://arbitrer.fib.unand.ac.id/"
+};
+
+const getJournalUrl = (name: string) => {
+  const cleanName = name.toLowerCase().trim();
+  if (journalUrls[cleanName]) return journalUrls[cleanName];
+  
+  for (const [key, value] of Object.entries(journalUrls)) {
+    if (cleanName.includes(key) || key.includes(cleanName)) {
+      return value;
+    }
+  }
+  return `https://ejournal.unand.ac.id/`;
+};
+
 interface JournalChartProps {
   data: ByJournalData[];
 }
@@ -24,20 +56,27 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
   const top20Data = data.slice(0, 20);
 
   const formatJournalTick = (tick: string) => {
-    if (tick.length > 25) {
-      return `${tick.substring(0, 22)}...`;
+    if (tick.length > 35) {
+      return `${tick.substring(0, 32)}...`;
     }
     return tick;
   };
 
+  const handleBarClick = (entry: any) => {
+    if (entry && entry.journal) {
+      const url = getJournalUrl(entry.journal);
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+  };
+
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[480px]">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[650px]">
       <div className="mb-4">
         <h3 className="text-base font-bold text-slate-800 dark:text-white">
           Top Journals
         </h3>
         <p className="text-xs text-slate-500 dark:text-slate-400">
-          Distribution across top 20 journals by article count
+          Distribution across top 20 journals by article count (Click bar to open website)
         </p>
       </div>
 
@@ -79,7 +118,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                 stroke="#94a3b8"
                 fontSize={11}
                 tickFormatter={formatJournalTick}
-                width={150}
+                width={180}
                 tickLine={false}
                 axisLine={false}
               />
@@ -95,6 +134,9 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                         <p className="font-bold text-slate-800 dark:text-white mt-1">
                           {payload[0].value} Publications
                         </p>
+                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 border-t border-slate-100 dark:border-slate-800 pt-1.5 italic">
+                          Click bar to open journal website ↗
+                        </p>
                       </div>
                     );
                   }
@@ -106,6 +148,8 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                 fill="url(#journalGradient)"
                 radius={[0, 4, 4, 0]}
                 maxBarSize={20}
+                style={{ cursor: "pointer" }}
+                onClick={(state) => handleBarClick(state)}
               />
             </BarChart>
           </ResponsiveContainer>
