@@ -99,19 +99,6 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
         size: 180,
       },
       {
-        accessorKey: "doi",
-        header: "DOI",
-        cell: (info) => {
-          const doi = info.getValue() as string;
-          return (
-            <code className="text-slate-500 dark:text-slate-400 text-[11px] font-mono select-all break-all">
-              {doi}
-            </code>
-          );
-        },
-        size: 150,
-      },
-      {
         accessorKey: "citedByCount",
         header: ({ column }) => (
           <button
