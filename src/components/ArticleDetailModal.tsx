@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Article Detail Modal Component
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import React, { useEffect, useRef } from "react";
 import { X, ExternalLink, BookOpen, Quote, User, FileText, BadgeCheck } from "lucide-react";
 import type { Article } from "../lib/types";

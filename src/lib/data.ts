@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Data Fetch Utilities
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import type { Article, DashboardSummary, ByYearData, ByJournalData, FilterData, SyncLog } from "./types";
 
 export interface DashboardDataset {

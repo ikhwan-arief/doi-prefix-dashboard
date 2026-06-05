@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Tailwind CSS Configuration
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import type { Config } from "tailwindcss";
 
 export default {

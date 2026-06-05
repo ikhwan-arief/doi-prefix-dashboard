@@ -1,6 +1,8 @@
 # DOI Prefix Publication Dashboard
 
-A public static dashboard designed to visualize, search, and analyze academic publications registered under the Crossref DOI prefix `10.25077`. 
+A public static dashboard designed to visualize, search, and analyze academic publications registered under the Crossref DOI prefix `10.25077`.
+
+Developed by: **Ikhwan Arief** ([ikhwan@unand.ac.id](mailto:ikhwan@unand.ac.id))
 
 The dashboard provides metadata aggregations, publication metrics over time, journal distribution analytics, and advanced searching/filtering on top of registered works.
 
@@ -51,9 +53,9 @@ Follow these steps to run the project locally on your machine:
 3. **Configure Environment Variables**:
    Create a `.env` file in the root of the project (you can copy `.env.example` as a template):
    ```env
-   CROSSREF_PREFIX=10.25077
-   CROSSREF_MAILTO=admin@example.ac.id
-   CROSSREF_USER_AGENT=DOI Prefix Dashboard/1.0 (mailto:admin@example.ac.id)
+    CROSSREF_PREFIX=10.25077
+    CROSSREF_MAILTO=ikhwan@unand.ac.id
+    CROSSREF_USER_AGENT=DOI Prefix Dashboard/1.0 (mailto:ikhwan@unand.ac.id)
    ```
 
 4. **Fetch Metadata**:

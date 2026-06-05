@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - React Dom Mount
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import './index.css'

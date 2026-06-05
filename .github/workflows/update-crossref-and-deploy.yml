@@ -1,3 +1,6 @@
+# DOI Prefix Publication Dashboard - GitHub Actions Workflow
+# Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+
 name: Update Crossref Data and Deploy
 
 on:

@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Article Table Component
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import React, { useState, useMemo } from "react";
 import {
   useReactTable,

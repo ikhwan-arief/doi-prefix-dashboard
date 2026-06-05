@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Filter Bar Component
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import React from "react";
 import { Search, RotateCcw, Download, Filter } from "lucide-react";
 

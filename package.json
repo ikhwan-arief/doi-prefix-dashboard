@@ -2,6 +2,7 @@
   "name": "dashboard-jurnal-per-prefix",
   "private": true,
   "version": "0.0.0",
+  "author": "Ikhwan Arief <ikhwan@unand.ac.id>",
   "type": "module",
   "scripts": {
     "dev": "vite",

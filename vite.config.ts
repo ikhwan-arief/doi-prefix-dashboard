@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Vite Configuration
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 

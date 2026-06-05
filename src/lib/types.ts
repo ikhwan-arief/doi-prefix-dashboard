@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - TypeScript Types
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 export type Author = {
   given?: string;
   family?: string;

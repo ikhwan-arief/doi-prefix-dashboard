@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Journal Chart Component
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import React from "react";
 import {
   BarChart,

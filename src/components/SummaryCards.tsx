@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Summary Cards Component
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import React from "react";
 import { FileText, BookOpen, MessageSquare, Calendar, RefreshCw } from "lucide-react";
 import type { DashboardSummary } from "../lib/types";

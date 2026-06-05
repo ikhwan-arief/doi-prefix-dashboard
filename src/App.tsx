@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Main Application Entry
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import { useEffect, useState, useMemo } from "react";
 import { fetchDashboardData, type DashboardDataset } from "./lib/data";
 import { exportArticlesToCSV } from "./lib/csv";
@@ -259,8 +264,11 @@ function App() {
           </div>
         </div>
 
-        <div className="text-center pt-4 border-t border-slate-100 dark:border-slate-900">
+        <div className="text-center pt-4 border-t border-slate-100 dark:border-slate-900 space-y-1">
           <p>© {new Date().getFullYear()} DOI Prefix Dashboard. Built for Crossref Prefix 10.25077.</p>
+          <p className="text-[11px] text-slate-400 dark:text-slate-500">
+            Aplikasi dikembangkan oleh <strong className="font-semibold text-slate-600 dark:text-slate-400">Ikhwan Arief</strong> (<a href="mailto:ikhwan@unand.ac.id" className="hover:text-sky-500 transition-colors">ikhwan@unand.ac.id</a>)
+          </p>
         </div>
       </footer>
 

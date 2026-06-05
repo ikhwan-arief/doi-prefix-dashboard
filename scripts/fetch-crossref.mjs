@@ -1,3 +1,8 @@
+/**
+ * DOI Prefix Publication Dashboard - Fetch Crossref Data Script
+ * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ */
+
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -24,8 +29,8 @@ if (fs.existsSync(envPath)) {
 
 // Fallback values
 const prefix = process.env.CROSSREF_PREFIX || "10.25077";
-const mailto = process.env.CROSSREF_MAILTO || "";
-const userAgent = process.env.CROSSREF_USER_AGENT || `DOI Prefix Dashboard/1.0 (mailto:${mailto || "admin@example.com"})`;
+const mailto = process.env.CROSSREF_MAILTO || "ikhwan@unand.ac.id";
+const userAgent = process.env.CROSSREF_USER_AGENT || `DOI Prefix Dashboard/1.0 (mailto:${mailto})`;
 
 const dataDir = path.join(rootDir, "public", "data");
 if (!fs.existsSync(dataDir)) {
