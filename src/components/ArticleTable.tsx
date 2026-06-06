@@ -13,16 +13,15 @@ import {
 } from "@tanstack/react-table";
 import type { ColumnDef, SortingState } from "@tanstack/react-table";
 import { Eye, ExternalLink, ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
-import type { Article, CitationRecord } from "../lib/types";
+import type { Article } from "../lib/types";
 import { formatAuthorsList } from "../lib/normalize";
 
 interface ArticleTableProps {
   data: Article[];
   onViewDetails: (article: Article) => void;
-  citationIndex?: Record<string, CitationRecord[]>;
 }
 
-export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails, citationIndex }) => {
+export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails }) => {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [pagination, setPagination] = useState({
     pageIndex: 0,
@@ -125,20 +124,6 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails,
           );
         },
         size: 100,
-      },
-      {
-        id: "citingCount",
-        header: "Citing (Matched)",
-        cell: (info) => {
-          const article = info.row.original;
-          const count = citationIndex ? (citationIndex[article.doi.toLowerCase()]?.length || 0) : 0;
-          return (
-            <span className="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-355 rounded-full" title="Citing articles matched in local Cited-by index">
-              {count}
-            </span>
-          );
-        },
-        size: 110,
       },
       {
         id: "actions",

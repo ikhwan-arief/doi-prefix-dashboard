@@ -264,7 +264,6 @@ function App() {
             <ArticleTable
               data={filteredArticles}
               onViewDetails={setSelectedArticle}
-              citationIndex={dataset.citationIndex}
             />
           </div>
         </section>
