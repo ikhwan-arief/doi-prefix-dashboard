@@ -188,7 +188,7 @@ function App() {
             </div>
             <div>
               <h1 className="text-base font-extrabold tracking-tight text-slate-800 dark:text-white">
-                DOI Prefix Dashboard
+                Daftar Publikasi dari Universitas Andalas
               </h1>
               <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 -mt-0.5">
                 Prefix 10.25077 • Crossref Catalog

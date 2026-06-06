@@ -72,16 +72,13 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
         </div>
       ))}
 
-      {/* Sync Status Info Card (span full on tablet, single on desktop if needed, or we just put it as header or footer metadata) */}
-      <div className="sm:col-span-2 lg:col-span-4 flex flex-wrap items-center justify-between gap-3 p-4 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm text-xs text-slate-500 dark:text-slate-400">
+      {/* Sync Status Info Card */}
+      <div className="sm:col-span-2 lg:col-span-4 flex items-center justify-between p-4 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm text-xs text-slate-500 dark:text-slate-400">
         <div className="flex items-center gap-2">
           <RefreshCw className="h-3.5 w-3.5 text-slate-400 animate-spin-slow" />
           <span>
-            Data Source: <strong className="font-semibold text-slate-700 dark:text-slate-300">{summary.source}</strong> (Prefix: <code className="bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded font-mono text-[11px]">{summary.prefix}</code>)
+            Last Sync: <strong className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(summary.lastSync.substring(0, 10))} {summary.lastSync.substring(11, 16)} UTC</strong>
           </span>
-        </div>
-        <div>
-          Last Sync: <strong className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(summary.lastSync.substring(0, 10))} {summary.lastSync.substring(11, 16)} UTC</strong>
         </div>
       </div>
     </div>
