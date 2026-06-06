@@ -22,7 +22,7 @@ export async function fetchDashboardData(): Promise<DashboardDataset> {
   const base = import.meta.env.BASE_URL || "/";
   const cleanBase = base.endsWith("/") ? base : `${base}/`;
   
-  const getUrl = (filename: string) => `${cleanBase}data/${filename}`;
+  const getUrl = (filename: string) => `${cleanBase}data/${filename}?t=${new Date().getTime()}`;
 
   try {
     const [articles, summary, byYear, byJournal, filters, syncLog] = await Promise.all([
