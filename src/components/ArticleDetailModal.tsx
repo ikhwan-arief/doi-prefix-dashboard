@@ -99,6 +99,26 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
     };
   }, [onClose]);
 
+  const citedDoi = article?.doi?.toLowerCase() || "";
+  const citingArticles = useMemo(() => {
+    if (!article) return [];
+    return citationIndex?.[citedDoi] || [];
+  }, [article, citedDoi, citationIndex]);
+
+  const filteredCitingArticles = useMemo(() => {
+    if (!citingSearchQuery.trim()) return citingArticles;
+    const q = citingSearchQuery.toLowerCase();
+    return citingArticles.filter(
+      (c) =>
+        (c.citingTitle || "").toLowerCase().includes(q) ||
+        (c.citingJournal || "").toLowerCase().includes(q) ||
+        (c.citingDoi || "").toLowerCase().includes(q) ||
+        (c.citingPublisher || "").toLowerCase().includes(q) ||
+        String(c.citingYear || "").includes(q) ||
+        (c.citingAuthors || []).some((a) => a.toLowerCase().includes(q))
+    );
+  }, [citingArticles, citingSearchQuery]);
+
   if (!article) return null;
 
   const abstractText = stripHtml(article.abstract);
@@ -114,23 +134,6 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
 
   // Get license URL
   const licenseUrl = article.license && Array.isArray(article.license) && article.license[0]?.URL;
-
-  const citedDoi = article.doi.toLowerCase();
-  const citingArticles = citationIndex[citedDoi] || [];
-
-  const filteredCitingArticles = useMemo(() => {
-    if (!citingSearchQuery.trim()) return citingArticles;
-    const q = citingSearchQuery.toLowerCase();
-    return citingArticles.filter(
-      (c) =>
-        (c.citingTitle || "").toLowerCase().includes(q) ||
-        (c.citingJournal || "").toLowerCase().includes(q) ||
-        (c.citingDoi || "").toLowerCase().includes(q) ||
-        (c.citingPublisher || "").toLowerCase().includes(q) ||
-        String(c.citingYear || "").includes(q) ||
-        (c.citingAuthors || []).some((a) => a.toLowerCase().includes(q))
-    );
-  }, [citingArticles, citingSearchQuery]);
 
   return (
     <dialog

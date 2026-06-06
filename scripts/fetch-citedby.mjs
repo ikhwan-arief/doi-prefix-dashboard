@@ -8,6 +8,22 @@ import path from "path";
 import { XMLParser } from "fast-xml-parser";
 import pLimit from "p-limit";
 
+// Simple .env parser to support local development configuration
+const envPath = path.join(process.cwd(), ".env");
+if (fs.existsSync(envPath)) {
+  const envContent = fs.readFileSync(envPath, "utf8");
+  envContent.split("\n").forEach((line) => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith("#")) {
+      const [key, ...valueParts] = trimmed.split("=");
+      const value = valueParts.join("=");
+      if (key && value) {
+        process.env[key.trim()] = value.trim().replace(/^['"]|['"]$/g, "");
+      }
+    }
+  });
+}
+
 // Configure variables
 const prefix = process.env.CROSSREF_PREFIX || "10.25077";
 const username = process.env.CROSSREF_CITEDBY_USER;
@@ -95,215 +111,140 @@ async function run() {
     });
     const parsedObj = parser.parse(xmlText);
 
-    // 3. Extract citation pairs recursively
-    const pairs = [];
-    
-    // Recursive scanner to extract cited -> citing relationships from fast-xml-parser tree
-    function scanNode(node, currentCitedDoi = null) {
-      if (!node || typeof node !== "object") return;
-
-      // Check for DOI node representing the cited article
-      let activeCited = currentCitedDoi;
-      if (node.doi && typeof node.doi === "string" && node.doi.toLowerCase().startsWith(prefix.toLowerCase())) {
-        activeCited = node.doi.toLowerCase().trim();
-      }
-
-      // Check if it's a citation or link relationship representing the citing article
-      if (node.citation && Array.isArray(node.citation)) {
-        node.citation.forEach(cit => {
-          if (cit.doi && activeCited) {
-            pairs.push({
-              citedDoi: activeCited,
-              citingDoi: cit.doi.toLowerCase().trim(),
-              matchDate: cit.msg_date || new Date().toISOString().substring(0, 10)
-            });
-          }
-        });
-      } else if (node.citation && typeof node.citation === "object") {
-        if (node.citation.doi && activeCited) {
-          pairs.push({
-            citedDoi: activeCited,
-            citingDoi: node.citation.doi.toLowerCase().trim(),
-            matchDate: node.citation.msg_date || new Date().toISOString().substring(0, 10)
-          });
-        }
-      }
-
-      // Handle forward link structure specifically if present
-      if (node.forward_link) {
-        const links = Array.isArray(node.forward_link) ? node.forward_link : [node.forward_link];
-        links.forEach(link => {
-          const cited = link.journal_article?.doi || link.book_item?.doi || link.conference_paper?.doi;
-          const citedClean = cited ? String(cited).toLowerCase().trim() : null;
-          
-          if (citedClean) {
-            const citations = link.citation_list?.citation;
-            if (citations) {
-              const citArray = Array.isArray(citations) ? citations : [citations];
-              citArray.forEach(c => {
-                if (c.doi) {
-                  pairs.push({
-                    citedDoi: citedClean,
-                    citingDoi: String(c.doi).toLowerCase().trim(),
-                    matchDate: c.msg_date || new Date().toISOString().substring(0, 10)
-                  });
-                }
-              });
-            }
-          }
-        });
-      }
-
-      // Recursively traverse other properties
-      for (const key in node) {
-        if (key !== "doi" && key !== "citation" && key !== "forward_link") {
-          const val = node[key];
-          if (Array.isArray(val)) {
-            val.forEach(item => scanNode(item, activeCited));
-          } else if (typeof val === "object") {
-            scanNode(val, activeCited);
-          }
-        }
-      }
-    }
-
-    scanNode(parsedObj);
-
-    // Deduplicate pairs by citedDoi + citingDoi
-    const uniquePairsMap = new Map();
-    pairs.forEach(p => {
-      const key = `${p.citedDoi}||${p.citingDoi}`;
-      if (!uniquePairsMap.has(key)) {
-        uniquePairsMap.set(key, p);
-      }
-    });
-
-    const deduplicatedPairs = Array.from(uniquePairsMap.values());
-    console.log(`Extracted ${deduplicatedPairs.length} unique citation pairs from XML.`);
-
-    // 4. Enrich Citing DOIs with metadata from Crossref REST API
-    const uniqueCitingDois = Array.from(new Set(deduplicatedPairs.map(p => p.citingDoi)));
-    console.log(`Enriching metadata for ${uniqueCitingDois.length} unique citing DOIs...`);
-
-    const enrichedMetadata = {};
-    const limit = pLimit(3); // Concurrency limit of 3
-
-    await Promise.all(
-      uniqueCitingDois.map(doi =>
-        limit(async () => {
-          try {
-            // Delay 300ms between requests
-            await new Promise(resolve => setTimeout(resolve, 300));
-
-            const worksUrl = `https://api.crossref.org/works/${encodeURIComponent(doi)}`;
-            const res = await fetch(worksUrl, {
-              headers: {
-                "User-Agent": userAgent
-              }
-            });
-
-            if (res.ok) {
-              const payload = await res.json();
-              const item = payload.message;
-              
-              // Extract year safely
-              let year = null;
-              if (item.published?.["date-parts"]?.[0]?.[0]) {
-                year = Number(item.published["date-parts"][0][0]);
-              } else if (item.created?.["date-parts"]?.[0]?.[0]) {
-                year = Number(item.created["date-parts"][0][0]);
-              }
-
-              // Extract authors safely
-              const authors = [];
-              if (item.author) {
-                item.author.forEach(a => {
-                  const name = a.name || `${a.given || ""} ${a.family || ""}`.trim();
-                  if (name) authors.push(name);
-                });
-              }
-
-              enrichedMetadata[doi] = {
-                title: item.title?.[0] || "Untitled Citing Article",
-                journal: item["container-title"]?.[0] || item.publisher || "Unknown Source",
-                publisher: item.publisher || "Unknown Publisher",
-                year: year || new Date().getFullYear(),
-                type: item.type || "journal-article",
-                authors: authors.length > 0 ? authors : ["Unknown Author"],
-                volume: item.volume || undefined,
-                issue: item.issue || undefined,
-                page: item.page || undefined,
-                url: item.URL || `https://doi.org/${doi}`
-              };
-            } else {
-              console.warn(`Could not enrich metadata for: ${doi} (HTTP status: ${res.status})`);
-            }
-          } catch (err) {
-            console.warn(`Error enriching metadata for: ${doi}`, err.message);
-          }
-        })
-      )
-    );
-
-    // 5. Combine and construct output models
+    // 3. Extract citation pairs and metadata from XML
     const finalCitations = [];
     const index = {};
     const citingJournalCounts = {};
+    const body = parsedObj.crossref_result?.query_result?.body;
 
-    deduplicatedPairs.forEach(p => {
-      const meta = enrichedMetadata[p.citingDoi] || {
-        title: "Untitled Citing Article",
-        journal: "Unknown Source",
-        publisher: "Unknown Publisher",
-        year: new Date().getFullYear(),
-        type: "journal-article",
-        authors: ["Unknown Author"],
-        url: `https://doi.org/${p.citingDoi}`
-      };
-
-      const record = {
-        citedDoi: p.citedDoi,
-        citingDoi: p.citingDoi,
-        citingDoiUrl: meta.url,
-        citingTitle: meta.title,
-        citingJournal: meta.journal,
-        citingPublisher: meta.publisher,
-        citingYear: meta.year,
-        citingType: meta.type,
-        citingAuthors: meta.authors,
-        citingVolume: meta.volume,
-        citingIssue: meta.issue,
-        citingPage: meta.page,
-        citationMatchDate: p.matchDate,
-        source: "Crossref Cited-by"
-      };
-
-      finalCitations.push(record);
-
-      // Add to index
-      if (!index[p.citedDoi]) {
-        index[p.citedDoi] = [];
-      }
-      index[p.citedDoi].push({
-        citingDoi: record.citingDoi,
-        citingDoiUrl: record.citingDoiUrl,
-        citingTitle: record.citingTitle,
-        citingJournal: record.citingJournal,
-        citingPublisher: record.citingPublisher,
-        citingYear: record.citingYear,
-        citingType: record.citingType,
-        citingAuthors: record.citingAuthors,
-        citingVolume: record.citingVolume,
-        citingIssue: record.citingIssue,
-        citingPage: record.citingPage,
-        citationMatchDate: record.citationMatchDate,
-        source: record.source
+    if (body && body.forward_link) {
+      const links = Array.isArray(body.forward_link) ? body.forward_link : [body.forward_link];
+      console.log(`Extracting citing metadata from ${links.length} forward links...`);
+      
+      links.forEach((link) => {
+        const citedDoiAttr = link["@_doi"];
+        if (!citedDoiAttr) return;
+        
+        const citedDoiClean = citedDoiAttr.toLowerCase().trim();
+        // Check if the cited DOI belongs to our prefix
+        if (!citedDoiClean.startsWith(prefix.toLowerCase())) {
+          return;
+        }
+        
+        // Find citeNode (journal_cite, conf_cite, book_cite, etc.)
+        const citeNode = link.journal_cite || link.conf_cite || link.book_cite || link.dissertation_cite || link.report_cite || link.standard_cite || link.other_cite;
+        if (!citeNode) return;
+        
+        // Extract citing DOI
+        let citingDoi = null;
+        if (citeNode.doi) {
+          if (typeof citeNode.doi === "string") {
+            citingDoi = citeNode.doi.toLowerCase().trim();
+          } else if (typeof citeNode.doi === "object") {
+            citingDoi = (citeNode.doi["#text"] || "").toLowerCase().trim();
+          }
+        }
+        
+        if (!citingDoi) return;
+        
+        // Extract year
+        let citingYear = citeNode.year;
+        if (citingYear && typeof citingYear === "object") {
+          citingYear = citingYear["#text"] || citingYear;
+        }
+        citingYear = Number(citingYear) || new Date().getFullYear();
+        
+        // Extract title safely
+        let citingTitle = citeNode.article_title || citeNode.paper_title || citeNode.title || "Untitled Citing Article";
+        if (typeof citingTitle === "object") {
+          citingTitle = citingTitle["#text"] || "Untitled Citing Article";
+        }
+        
+        // Extract journal/publisher
+        let citingJournal = citeNode.journal_title || citeNode.volume_title || citeNode.publisher || "Unknown Source";
+        if (typeof citingJournal === "object") {
+          citingJournal = citingJournal["#text"] || "Unknown Source";
+        }
+        let citingPublisher = citeNode.publisher || "Unknown Publisher";
+        if (typeof citingPublisher === "object") {
+          citingPublisher = citingPublisher["#text"] || "Unknown Publisher";
+        }
+        
+        // Extract contributors/authors
+        const authors = [];
+        if (citeNode.contributors && citeNode.contributors.contributor) {
+          const contribs = Array.isArray(citeNode.contributors.contributor) 
+            ? citeNode.contributors.contributor 
+            : [citeNode.contributors.contributor];
+          contribs.forEach(c => {
+            const given = c.given_name || "";
+            const family = c.surname || "";
+            const name = c.name || `${given} ${family}`.trim();
+            if (name) authors.push(name);
+          });
+        }
+        const finalAuthors = authors.length > 0 ? authors : ["Unknown Author"];
+        
+        const record = {
+          citedDoi: citedDoiClean,
+          citingDoi: citingDoi,
+          citingDoiUrl: `https://doi.org/${citingDoi}`,
+          citingTitle: String(citingTitle),
+          citingJournal: String(citingJournal),
+          citingPublisher: String(citingPublisher),
+          citingYear: citingYear,
+          citingType: citeNode.publication_type || (link.journal_cite ? "journal-article" : "proceedings-article"),
+          citingAuthors: finalAuthors,
+          citingVolume: citeNode.volume ? String(citeNode.volume) : undefined,
+          citingIssue: citeNode.issue ? String(citeNode.issue) : undefined,
+          citingPage: citeNode.first_page ? String(citeNode.first_page) : undefined,
+          citationMatchDate: citeNode.msg_date || new Date().toISOString().substring(0, 10),
+          source: "Crossref Cited-by"
+        };
+        
+        finalCitations.push(record);
+        
+        // Add to index
+        if (!index[record.citedDoi]) {
+          index[record.citedDoi] = [];
+        }
+        
+        // Avoid duplicate citing DOIs for the same cited DOI
+        const exists = index[record.citedDoi].some(x => x.citingDoi === record.citingDoi);
+        if (!exists) {
+          index[record.citedDoi].push({
+            citingDoi: record.citingDoi,
+            citingDoiUrl: record.citingDoiUrl,
+            citingTitle: record.citingTitle,
+            citingJournal: record.citingJournal,
+            citingPublisher: record.citingPublisher,
+            citingYear: record.citingYear,
+            citingType: record.citingType,
+            citingAuthors: record.citingAuthors,
+            citingVolume: record.citingVolume,
+            citingIssue: record.citingIssue,
+            citingPage: record.citingPage,
+            citationMatchDate: record.citationMatchDate,
+            source: record.source
+          });
+        }
+        
+        // Count citing journals
+        const journalName = record.citingJournal;
+        citingJournalCounts[journalName] = (citingJournalCounts[journalName] || 0) + 1;
       });
+    }
 
-      // Count citing journals
-      const journalName = record.citingJournal;
-      citingJournalCounts[journalName] = (citingJournalCounts[journalName] || 0) + 1;
+    // Deduplicate total list by key
+    const uniqueCitationsMap = new Map();
+    finalCitations.forEach(c => {
+      uniqueCitationsMap.set(`${c.citedDoi}||${c.citingDoi}`, c);
     });
+    const finalUniqueCitations = Array.from(uniqueCitationsMap.values());
+
+    console.log(`Extracted ${finalUniqueCitations.length} unique citation pairs from XML.`);
+    
+    const uniqueCitingDois = Array.from(new Set(finalUniqueCitations.map(p => p.citingDoi)));
 
     // Formatting top citing journals
     const finalCitingJournals = Object.entries(citingJournalCounts)
