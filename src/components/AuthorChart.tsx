@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - Author Chart Component
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 import React, { useMemo } from "react";

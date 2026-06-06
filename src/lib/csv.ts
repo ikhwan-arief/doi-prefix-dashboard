@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - CSV Exporter
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 import type { Article } from "./types";

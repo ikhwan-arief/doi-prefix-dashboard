@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - Normalization Helpers
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 import type { Author } from "./types";

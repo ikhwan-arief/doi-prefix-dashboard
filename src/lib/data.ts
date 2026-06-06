@@ -1,9 +1,9 @@
 /**
  * DOI Prefix Publication Dashboard - Data Fetch Utilities
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
-import type { Article, DashboardSummary, ByYearData, ByJournalData, FilterData, SyncLog } from "./types";
+import type { Article, DashboardSummary, ByYearData, ByJournalData, FilterData, SyncLog, CitationRecord, CitationSummary } from "./types";
 
 export interface DashboardDataset {
   articles: Article[];
@@ -12,6 +12,8 @@ export interface DashboardDataset {
   byJournal: ByJournalData[];
   filters: FilterData;
   syncLog: SyncLog;
+  citationIndex: Record<string, CitationRecord[]>;
+  citationSummary: CitationSummary | null;
 }
 
 /**
@@ -25,7 +27,7 @@ export async function fetchDashboardData(): Promise<DashboardDataset> {
   const getUrl = (filename: string) => `${cleanBase}data/${filename}?t=${new Date().getTime()}`;
 
   try {
-    const [articles, summary, byYear, byJournal, filters, syncLog] = await Promise.all([
+    const [articles, summary, byYear, byJournal, filters, syncLog, citationIndex, citationSummary] = await Promise.all([
       fetch(getUrl("articles.json")).then((res) => {
         if (!res.ok) throw new Error("articles.json not found");
         return res.json() as Promise<Article[]>;
@@ -50,6 +52,12 @@ export async function fetchDashboardData(): Promise<DashboardDataset> {
         if (!res.ok) throw new Error("sync-log.json not found");
         return res.json() as Promise<SyncLog>;
       }),
+      fetch(getUrl("citation-index.json"))
+        .then((res) => (res.ok ? res.json() : {}))
+        .catch(() => ({})) as Promise<Record<string, CitationRecord[]>>,
+      fetch(getUrl("citation-summary.json"))
+        .then((res) => (res.ok ? res.json() : null))
+        .catch(() => null) as Promise<CitationSummary | null>,
     ]);
 
     const decodeHtmlEntities = (str?: string): string => {
@@ -87,6 +95,8 @@ export async function fetchDashboardData(): Promise<DashboardDataset> {
       byJournal: decodedByJournal,
       filters: decodedFilters,
       syncLog,
+      citationIndex,
+      citationSummary,
     };
   } catch (error) {
     console.error("Failed to load static JSON files:", error);

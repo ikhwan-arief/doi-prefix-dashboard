@@ -1,5 +1,5 @@
 # DOI Prefix Publication Dashboard - GitHub Actions Workflow
-# Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+# Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
 
 name: Update Crossref Data and Deploy
 
@@ -25,6 +25,10 @@ jobs:
       CROSSREF_PREFIX: "10.25077"
       CROSSREF_MAILTO: ${{ vars.CROSSREF_MAILTO }}
       CROSSREF_USER_AGENT: ${{ vars.CROSSREF_USER_AGENT }}
+      CITEDBY_START_DATE: ${{ vars.CITEDBY_START_DATE }}
+      CITEDBY_END_DATE: ${{ vars.CITEDBY_END_DATE }}
+      CROSSREF_CITEDBY_USER: ${{ secrets.CROSSREF_CITEDBY_USER }}
+      CROSSREF_CITEDBY_PASSWORD: ${{ secrets.CROSSREF_CITEDBY_PASSWORD }}
 
     steps:
       - name: Checkout
@@ -40,7 +44,7 @@ jobs:
         run: npm ci
 
       - name: Fetch Crossref data
-        run: npm run fetch
+        run: npm run fetch:all
 
       - name: Build static site
         run: npm run build

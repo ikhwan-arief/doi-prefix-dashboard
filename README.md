@@ -2,7 +2,7 @@
 
 A public static dashboard designed to visualize, search, and analyze academic publications registered under the Crossref DOI prefix `10.25077`.
 
-Developed by: **Ikhwan Arief** ([ikhwan@unand.ac.id](mailto:ikhwan@unand.ac.id))
+Developed by: **Ikhwan Arief** ([ikhwan[at]unand.ac.id](mailto:ikhwan[at]unand.ac.id))
 
 The dashboard provides metadata aggregations, publication metrics over time, journal distribution analytics, and advanced searching/filtering on top of registered works.
 
@@ -54,8 +54,8 @@ Follow these steps to run the project locally on your machine:
    Create a `.env` file in the root of the project (you can copy `.env.example` as a template):
    ```env
     CROSSREF_PREFIX=10.25077
-    CROSSREF_MAILTO=ikhwan@unand.ac.id
-    CROSSREF_USER_AGENT=DOI Prefix Dashboard/1.0 (mailto:ikhwan@unand.ac.id)
+    CROSSREF_MAILTO=ikhwan[at]unand.ac.id
+    CROSSREF_USER_AGENT=DOI Prefix Dashboard/1.0 (mailto:ikhwan[at]unand.ac.id)
    ```
 
 4. **Fetch Metadata**:
@@ -103,6 +103,20 @@ After pushing your code to GitHub:
 3. Under **Build and deployment → Source**, change the option from **Deploy from a branch** to **GitHub Actions**.
 
 The workflow in `.github/workflows/update-crossref-and-deploy.yml` will automatically build the site and deploy it to GitHub Pages on every commit, on manual trigger (`workflow_dispatch`), and automatically on a daily schedule (at 20:00 UTC).
+
+## Crossref Cited-by Configuration
+
+The dashboard supports displaying forward citation lists (showing which articles cite each of our prefix's works). This feature requires Crossref Cited-by account credentials:
+
+1. **Secure Ingestion**: The Cited-by query servlet (`getForwardLinks`) is only called at build time inside GitHub Actions or local dev setups. Credentials are never written to static JSON files or exposed in frontend JavaScript.
+2. **Graceful Fallback**: If Cited-by credentials are not configured, the ingestion script will run in fallback mode, generating empty citation databases, so the app still deploys and loads successfully.
+3. **Repository Configuration**:
+   - Add the following secrets under **Settings → Secrets and variables → Actions → Secrets**:
+     - `CROSSREF_CITEDBY_USER`: Your Crossref Cited-by account username.
+     - `CROSSREF_CITEDBY_PASSWORD`: Your Crossref Cited-by account password.
+   - Add the following variables under **Settings → Secrets and variables → Actions → Variables** (optional):
+     - `CITEDBY_START_DATE`: Query start date (defaults to `2000-01-01`).
+     - `CITEDBY_END_DATE`: Query end date (defaults to `2030-12-31`).
 
 ## Data Quality & Citation Caveats
 

@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - PostCSS Configuration
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 export default {

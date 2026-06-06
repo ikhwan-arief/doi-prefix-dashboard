@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - TypeScript Types
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 export type Author = {
@@ -88,4 +88,39 @@ export type SyncLog = {
   totalFetched: number;
   totalArticlesAfterDeduplication: number;
   errorMessage: string | null;
+};
+
+export type CitationRecord = {
+  citedDoi: string;
+  citedTitle?: string;
+  citedJournal?: string;
+  citedYear?: number;
+
+  citingDoi: string;
+  citingDoiUrl: string;
+  citingTitle?: string;
+  citingJournal?: string;
+  citingPublisher?: string;
+  citingYear?: number;
+  citingType?: string;
+  citingAuthors?: string[];
+  citingVolume?: string;
+  citingIssue?: string;
+  citingPage?: string;
+
+  citationMatchDate?: string;
+  source: "Crossref Cited-by";
+};
+
+export type CitationSummary = {
+  prefix: string;
+  source: string;
+  totalCitationPairs: number;
+  totalCitedArticlesWithCitations: number;
+  totalUniqueCitingDois: number;
+  totalUniqueCitingJournals: number;
+  startDate: string;
+  endDate: string;
+  lastSync: string;
+  isConfigured: boolean;
 };

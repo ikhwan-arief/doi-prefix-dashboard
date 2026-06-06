@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - Vite Configuration
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 import { defineConfig } from "vite";

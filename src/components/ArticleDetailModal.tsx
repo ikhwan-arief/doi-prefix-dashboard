@@ -1,11 +1,11 @@
 /**
  * DOI Prefix Publication Dashboard - Article Detail Modal Component
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { X, ExternalLink, BookOpen, Quote, User, FileText, BadgeCheck } from "lucide-react";
-import type { Article } from "../lib/types";
+import type { Article, CitationRecord } from "../lib/types";
 import { stripHtml, formatDate } from "../lib/normalize";
 
 const getLicenseName = (url?: string): string => {
@@ -37,10 +37,18 @@ const getLicenseName = (url?: string): string => {
 interface ArticleDetailModalProps {
   article: Article | null;
   onClose: () => void;
+  citationIndex: Record<string, CitationRecord[]>;
 }
 
-export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article, onClose }) => {
+export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article, onClose, citationIndex }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const [activeTab, setActiveTab] = useState<"details" | "citations">("details");
+  const [citingSearchQuery, setCitingSearchQuery] = useState<string>("");
+
+  useEffect(() => {
+    setActiveTab("details");
+    setCitingSearchQuery("");
+  }, [article]);
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -107,6 +115,23 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
   // Get license URL
   const licenseUrl = article.license && Array.isArray(article.license) && article.license[0]?.URL;
 
+  const citedDoi = article.doi.toLowerCase();
+  const citingArticles = citationIndex[citedDoi] || [];
+
+  const filteredCitingArticles = useMemo(() => {
+    if (!citingSearchQuery.trim()) return citingArticles;
+    const q = citingSearchQuery.toLowerCase();
+    return citingArticles.filter(
+      (c) =>
+        (c.citingTitle || "").toLowerCase().includes(q) ||
+        (c.citingJournal || "").toLowerCase().includes(q) ||
+        (c.citingDoi || "").toLowerCase().includes(q) ||
+        (c.citingPublisher || "").toLowerCase().includes(q) ||
+        String(c.citingYear || "").includes(q) ||
+        (c.citingAuthors || []).some((a) => a.toLowerCase().includes(q))
+    );
+  }, [citingArticles, citingSearchQuery]);
+
   return (
     <dialog
       ref={dialogRef}
@@ -141,170 +166,289 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
         </button>
       </div>
 
+      {/* Tabs */}
+      <div className="flex border-b border-slate-150 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-950/20 text-xs">
+        <button
+          onClick={() => setActiveTab("details")}
+          className={`flex-1 py-3 font-bold border-b-2 text-center transition-all cursor-pointer ${
+            activeTab === "details"
+              ? "border-sky-500 text-sky-600 dark:text-sky-400 bg-sky-50/15"
+              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+          }`}
+        >
+          Details
+        </button>
+        <button
+          onClick={() => setActiveTab("citations")}
+          className={`flex-1 py-3 font-bold border-b-2 text-center transition-all cursor-pointer ${
+            activeTab === "citations"
+              ? "border-sky-500 text-sky-600 dark:text-sky-400 bg-sky-50/15"
+              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+          }`}
+        >
+          Citing Articles ({citingArticles.length})
+        </button>
+      </div>
+
       {/* Scrollable Content */}
-      <div className="flex-1 overflow-y-auto p-6 space-y-6">
-        {/* Authors Section */}
-        {article.authors && article.authors.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <User className="h-3.5 w-3.5" />
-              <span>Authors</span>
-            </h4>
-            <div className="flex flex-wrap gap-2">
-              {article.authors.map((author, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs"
-                >
-                  <span className="font-semibold text-slate-800 dark:text-slate-200">{author.name}</span>
-                  {author.orcid && (
-                    <a
-                      href={author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/20"
+      <div className="flex-1 overflow-y-auto p-6">
+        {activeTab === "details" ? (
+          <div className="space-y-6">
+            {/* Authors Section */}
+            {article.authors && article.authors.length > 0 && (
+              <div className="space-y-2">
+                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5" />
+                  <span>Authors</span>
+                </h4>
+                <div className="flex flex-wrap gap-2">
+                  {article.authors.map((author, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs"
                     >
-                      <span>ORCID</span>
-                    </a>
-                  )}
+                      <span className="font-semibold text-slate-800 dark:text-slate-200">{author.name}</span>
+                      {author.orcid && (
+                        <a
+                          href={author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/20"
+                        >
+                          <span>ORCID</span>
+                        </a>
+                      )}
+                    </div>
+                  ))}
                 </div>
-              ))}
+              </div>
+            )}
+
+            {/* Abstract */}
+            <div className="space-y-2">
+              <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5" />
+                <span>Abstract</span>
+              </h4>
+              {abstractText ? (
+                <p className="text-sm text-slate-700 dark:text-slate-350 leading-relaxed text-justify bg-slate-50/30 dark:bg-slate-950/10 p-4 rounded-xl border border-slate-100 dark:border-slate-850">
+                  {abstractText}
+                </p>
+              ) : (
+                <p className="text-sm text-slate-400 dark:text-slate-500 italic">
+                  No abstract deposited in Crossref metadata.
+                </p>
+              )}
             </div>
-          </div>
-        )}
 
-        {/* Abstract */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-            <FileText className="h-3.5 w-3.5" />
-            <span>Abstract</span>
-          </h4>
-          {abstractText ? (
-            <p className="text-sm text-slate-700 dark:text-slate-350 leading-relaxed text-justify bg-slate-50/30 dark:bg-slate-950/10 p-4 rounded-xl border border-slate-100 dark:border-slate-850">
-              {abstractText}
-            </p>
-          ) : (
-            <p className="text-sm text-slate-400 dark:text-slate-500 italic">
-              No abstract deposited in Crossref metadata.
-            </p>
-          )}
-        </div>
+            {/* Meta Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Publication Context */}
+              <div className="p-4 rounded-xl border border-slate-150 dark:border-slate-850 space-y-3">
+                <h5 className="text-xs font-bold text-indigo-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <BookOpen className="h-3.5 w-3.5" />
+                  <span>Publication Context</span>
+                </h5>
+                <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                  <li>
+                    <strong className="font-semibold text-slate-500 dark:text-slate-400">Journal:</strong>{" "}
+                    {article.journal}
+                  </li>
+                  {article.publisher && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Publisher:</strong>{" "}
+                      {article.publisher}
+                    </li>
+                  )}
+                  {(article.volume || article.issue || article.page || article.articleNumber) && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Metadata:</strong>{" "}
+                      {article.volume && `Vol. ${article.volume}`}
+                      {article.issue && `, No. ${article.issue}`}
+                      {article.page && `, pp. ${article.page}`}
+                      {article.articleNumber && `, Art. ${article.articleNumber}`}
+                    </li>
+                  )}
+                  {identifiers.length > 0 && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Identifiers:</strong>{" "}
+                      {identifiers.join(" | ")}
+                    </li>
+                  )}
+                  {article.language && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Language:</strong>{" "}
+                      {article.language.toUpperCase()}
+                    </li>
+                  )}
+                </ul>
+              </div>
 
-        {/* Meta Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {/* Publication Context */}
-          <div className="p-4 rounded-xl border border-slate-150 dark:border-slate-850 space-y-3">
-            <h5 className="text-xs font-bold text-indigo-500 uppercase tracking-wider flex items-center gap-1.5">
-              <BookOpen className="h-3.5 w-3.5" />
-              <span>Publication Context</span>
-            </h5>
-            <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
-              <li>
-                <strong className="font-semibold text-slate-500 dark:text-slate-400">Journal:</strong>{" "}
-                {article.journal}
-              </li>
-              {article.publisher && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Publisher:</strong>{" "}
-                  {article.publisher}
-                </li>
-              )}
-              {(article.volume || article.issue || article.page || article.articleNumber) && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Metadata:</strong>{" "}
-                  {article.volume && `Vol. ${article.volume}`}
-                  {article.issue && `, No. ${article.issue}`}
-                  {article.page && `, pp. ${article.page}`}
-                  {article.articleNumber && `, Art. ${article.articleNumber}`}
-                </li>
-              )}
-              {identifiers.length > 0 && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Identifiers:</strong>{" "}
-                  {identifiers.join(" | ")}
-                </li>
-              )}
-              {article.language && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Language:</strong>{" "}
-                  {article.language.toUpperCase()}
-                </li>
-              )}
-            </ul>
-          </div>
+              {/* Citations & Dates */}
+              <div className="p-4 rounded-xl border border-slate-150 dark:border-slate-850 space-y-3">
+                <h5 className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+                  <Quote className="h-3.5 w-3.5" />
+                  <span>Citations & History</span>
+                </h5>
+                <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                  <li className="flex items-center gap-3">
+                    <span>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Crossref Cited By:</strong>{" "}
+                      <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/35 text-emerald-600 dark:text-emerald-400 font-bold rounded">
+                        {article.citedByCount ?? 0}
+                      </span>
+                    </span>
+                  </li>
+                  <li>
+                    <strong className="font-semibold text-slate-500 dark:text-slate-400">Published Date:</strong>{" "}
+                    {formatDate(article.publishedDate)}
+                  </li>
+                  {article.createdDate && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Record Created:</strong>{" "}
+                      {formatDate(article.createdDate)}
+                    </li>
+                  )}
+                  {article.depositedDate && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Last Deposited:</strong>{" "}
+                      {formatDate(article.depositedDate)}
+                    </li>
+                  )}
+                  {article.indexedDate && (
+                    <li>
+                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Last Indexed:</strong>{" "}
+                      {formatDate(article.indexedDate)}
+                    </li>
+                  )}
+                </ul>
+              </div>
+            </div>
 
-          {/* Citations & Dates */}
-          <div className="p-4 rounded-xl border border-slate-150 dark:border-slate-850 space-y-3">
-            <h5 className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Quote className="h-3.5 w-3.5" />
-              <span>Citations & History</span>
-            </h5>
-            <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
-              <li className="flex items-center gap-3">
-                <span>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Crossref Cited By:</strong>{" "}
-                  <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/35 text-emerald-600 dark:text-emerald-400 font-bold rounded">
-                    {article.citedByCount ?? 0}
+            {/* License Block */}
+            {licenseUrl ? (
+              <div className="flex items-center justify-between p-4 bg-emerald-50/30 dark:bg-emerald-950/15 border border-emerald-100 dark:border-emerald-900/30 rounded-xl">
+                <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+                  <BadgeCheck className="h-4 w-4 text-emerald-500" />
+                  <span>
+                    License: <strong className="font-bold text-emerald-800 dark:text-emerald-200">{getLicenseName(licenseUrl)}</strong>
                   </span>
+                </div>
+                <a
+                  href={licenseUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-450 dark:hover:text-emerald-350 font-bold underline underline-offset-2"
+                >
+                  <span>View License</span>
+                  <ExternalLink className="h-3.5 w-3.5" />
+                </a>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-150 dark:border-red-900/40 rounded-xl">
+                <div className="flex items-center gap-2 text-xs text-red-600 dark:text-red-400 font-bold">
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+                  <span>No license deposited in Crossref metadata</span>
+                </div>
+                <span className="text-[10px] text-red-650 dark:text-red-400 font-extrabold uppercase tracking-wider">
+                  Warning
                 </span>
-              </li>
-              <li>
-                <strong className="font-semibold text-slate-500 dark:text-slate-400">Published Date:</strong>{" "}
-                {formatDate(article.publishedDate)}
-              </li>
-              {article.createdDate && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Record Created:</strong>{" "}
-                  {formatDate(article.createdDate)}
-                </li>
-              )}
-              {article.depositedDate && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Last Deposited:</strong>{" "}
-                  {formatDate(article.depositedDate)}
-                </li>
-              )}
-              {article.indexedDate && (
-                <li>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">Last Indexed:</strong>{" "}
-                  {formatDate(article.indexedDate)}
-                </li>
-              )}
-            </ul>
-          </div>
-        </div>
-
-        {/* License Block */}
-        {licenseUrl ? (
-          <div className="flex items-center justify-between p-4 bg-emerald-50/30 dark:bg-emerald-950/15 border border-emerald-100 dark:border-emerald-900/30 rounded-xl">
-            <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-              <BadgeCheck className="h-4 w-4 text-emerald-500" />
-              <span>
-                License: <strong className="font-bold text-emerald-800 dark:text-emerald-200">{getLicenseName(licenseUrl)}</strong>
-              </span>
-            </div>
-            <a
-              href={licenseUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-450 dark:hover:text-emerald-350 font-bold underline underline-offset-2"
-            >
-              <span>View License</span>
-              <ExternalLink className="h-3.5 w-3.5" />
-            </a>
+              </div>
+            )}
           </div>
         ) : (
-          <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-150 dark:border-red-900/40 rounded-xl">
-            <div className="flex items-center gap-2 text-xs text-red-600 dark:text-red-400 font-bold">
-              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
-              <span>No license deposited in Crossref metadata</span>
+          <div className="space-y-4">
+            {/* Search filter for citing articles */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Search citing articles by title, authors, or journal..."
+                value={citingSearchQuery}
+                onChange={(e) => setCitingSearchQuery(e.target.value)}
+                className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-355 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
+              />
+              {citingSearchQuery && (
+                <button
+                  onClick={() => setCitingSearchQuery("")}
+                  className="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl transition-all cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
             </div>
-            <span className="text-[10px] text-red-650 dark:text-red-400 font-extrabold uppercase tracking-wider">
-              Warning
-            </span>
+
+            {/* Citations Count */}
+            <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+              Crossref Cited-by: {citingArticles.length} citing articles found
+            </div>
+
+            {/* List / Table */}
+            {filteredCitingArticles.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center space-y-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
+                <Quote className="h-8 w-8 text-slate-300 dark:text-slate-700" />
+                <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+                  {citingArticles.length === 0
+                    ? "No citing articles found in Crossref Cited-by for this DOI."
+                    : "No matching citing articles found."}
+                </p>
+              </div>
+            ) : (
+              <div className="overflow-x-auto border border-slate-150 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/10">
+                <table className="min-w-full divide-y divide-slate-150 dark:divide-slate-800 text-left text-[11px] leading-normal">
+                  <thead className="bg-slate-50 dark:bg-slate-950/40 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px]">
+                    <tr>
+                      <th className="px-4 py-3 text-center w-12">Year</th>
+                      <th className="px-4 py-3">Citing Article</th>
+                      <th className="px-4 py-3">Citing Journal</th>
+                      <th className="px-4 py-3">Authors</th>
+                      <th className="px-4 py-3">Type</th>
+                      <th className="px-4 py-3 text-right">Action</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 text-slate-700 dark:text-slate-350">
+                    {filteredCitingArticles.map((cit, idx) => (
+                      <tr key={idx} className="hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition-colors">
+                        <td className="px-4 py-3 text-center font-bold text-slate-800 dark:text-slate-200">
+                          {cit.citingYear || "—"}
+                        </td>
+                        <td className="px-4 py-3 font-semibold text-slate-850 dark:text-slate-100 break-words max-w-xs">
+                          {cit.citingTitle}
+                        </td>
+                        <td className="px-4 py-3 italic text-slate-500 dark:text-slate-400 break-words max-w-xs">
+                          {cit.citingJournal}
+                        </td>
+                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 break-words max-w-xs">
+                          {cit.citingAuthors?.join(", ") || "Unknown Author"}
+                        </td>
+                        <td className="px-4 py-3">
+                          <span className="inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[9px] font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider">
+                            {cit.citingType?.replace("-", " ") || "Article"}
+                          </span>
+                        </td>
+                        <td className="px-4 py-3 text-right">
+                          <a
+                            href={cit.citingDoiUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 font-bold text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-355 underline underline-offset-1"
+                          >
+                            <span>Open DOI</span>
+                            <ExternalLink className="h-3 w-3" />
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+
+            {/* Caveat */}
+            <div className="p-3.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/10 text-[10px] text-slate-500 dark:text-slate-450 leading-relaxed italic">
+              Crossref Cited-by reflects citation links matched from references deposited to Crossref. It may differ from Scopus, Web of Science, SINTA, Google Scholar, or Dimensions.
+            </div>
           </div>
         )}
-
       </div>
 
       {/* Footer Actions */}

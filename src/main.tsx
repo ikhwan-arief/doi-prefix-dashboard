@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - React Dom Mount
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 import { StrictMode } from 'react'

@@ -2,18 +2,22 @@
   "name": "dashboard-jurnal-per-prefix",
   "private": true,
   "version": "0.0.0",
-  "author": "Ikhwan Arief <ikhwan@unand.ac.id>",
+  "author": "Ikhwan Arief <ikhwan[at]unand.ac.id>",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "fetch": "node scripts/fetch-crossref.mjs"
+    "fetch": "node scripts/fetch-crossref.mjs",
+    "fetch:citedby": "node scripts/fetch-citedby.mjs",
+    "fetch:all": "npm run fetch && npm run fetch:citedby"
   },
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
+    "fast-xml-parser": "^5.8.0",
     "lucide-react": "^1.17.0",
+    "p-limit": "^7.3.0",
     "react": "^19.2.6",
     "react-dom": "^19.2.6",
     "recharts": "^3.8.1"

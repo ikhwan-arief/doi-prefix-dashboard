@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - Main Application Entry
- * Creator: Ikhwan Arief (ikhwan@unand.ac.id)
+ * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
  */
 
 import { useEffect, useState, useMemo } from "react";
@@ -188,7 +188,7 @@ function App() {
             </div>
             <div>
               <h1 className="text-base font-extrabold tracking-tight text-slate-800 dark:text-white">
-                Daftar Publikasi dari Universitas Andalas
+                Universitas Andalas Publications List
               </h1>
               <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 -mt-0.5">
                 Prefix 10.25077 • Crossref Catalog
@@ -264,6 +264,7 @@ function App() {
             <ArticleTable
               data={filteredArticles}
               onViewDetails={setSelectedArticle}
+              citationIndex={dataset.citationIndex}
             />
           </div>
         </section>
@@ -290,9 +291,9 @@ function App() {
         </div>
 
         <div className="text-center pt-4 border-t border-slate-100 dark:border-slate-900 space-y-1">
-          <p>© {new Date().getFullYear()} DOI Prefix Dashboard. Built for Crossref Prefix 10.25077.</p>
+          <p>© {new Date().getFullYear()} Universitas Andalas Publications List. Built for Crossref Prefix 10.25077.</p>
           <p className="text-[11px] text-slate-400 dark:text-slate-500">
-            Application developed by <strong className="font-semibold text-slate-600 dark:text-slate-400">Ikhwan Arief</strong> (<a href="mailto:ikhwan@unand.ac.id" className="hover:text-sky-500 transition-colors">ikhwan@unand.ac.id</a>)
+            Application developed by <strong className="font-semibold text-slate-600 dark:text-slate-400">Ikhwan Arief</strong> (<a href="mailto:ikhwan[at]unand.ac.id" className="hover:text-sky-500 transition-colors">ikhwan[at]unand.ac.id</a>)
           </p>
         </div>
       </footer>
@@ -301,6 +302,7 @@ function App() {
       <ArticleDetailModal
         article={selectedArticle}
         onClose={() => setSelectedArticle(null)}
+        citationIndex={dataset.citationIndex}
       />
 
     </div>
