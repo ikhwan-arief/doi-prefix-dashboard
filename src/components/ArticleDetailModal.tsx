@@ -148,35 +148,24 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
               <User className="h-3.5 w-3.5" />
-              <span>Authors & Affiliations</span>
+              <span>Authors</span>
             </h4>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="flex flex-wrap gap-2">
               {article.authors.map((author, idx) => (
                 <div
                   key={idx}
-                  className="flex flex-col gap-1 px-4 py-2.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs text-slate-755 dark:text-slate-300"
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs"
                 >
-                  <div className="flex items-center flex-wrap gap-1.5">
-                    <span className="font-bold text-slate-800 dark:text-white">{author.name}</span>
-                    {author.orcid && (
-                      <a
-                        href={author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/20"
-                      >
-                        <span>ORCID</span>
-                      </a>
-                    )}
-                  </div>
-                  {author.affiliation && author.affiliation.length > 0 ? (
-                    <span className="text-[11px] text-slate-500 dark:text-slate-450 italic mt-0.5 leading-snug">
-                      {author.affiliation.join("; ")}
-                    </span>
-                  ) : (
-                    <span className="text-[11px] text-slate-400 dark:text-slate-500 italic mt-0.5 leading-snug">
-                      No affiliation deposited
-                    </span>
+                  <span className="font-semibold text-slate-800 dark:text-slate-200">{author.name}</span>
+                  {author.orcid && (
+                    <a
+                      href={author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/20"
+                    >
+                      <span>ORCID</span>
+                    </a>
                   )}
                 </div>
               ))}
@@ -322,41 +311,6 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
           </div>
         )}
 
-        {/* References list */}
-        <div className="space-y-2">
-          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-            <BookOpen className="h-3.5 w-3.5 text-indigo-500" />
-            <span>References ({article.references?.length || 0})</span>
-          </h4>
-          {article.references && article.references.length > 0 ? (
-            <ul className="space-y-2 bg-slate-50/30 dark:bg-slate-950/10 p-4 rounded-xl border border-slate-100 dark:border-slate-850 divide-y divide-slate-100/50 dark:divide-slate-800/30 text-xs">
-              {article.references.map((ref, idx) => {
-                const cleanDoi = ref.doi ? ref.doi.trim() : "";
-                const doiUrl = cleanDoi ? `https://doi.org/${cleanDoi.toLowerCase()}` : "";
-                return (
-                  <li key={ref.key || idx} className={`${idx > 0 ? "pt-2" : ""} text-slate-650 dark:text-slate-350 leading-relaxed break-words`}>
-                    <span>{ref.unstructured || "Untitled Reference"}</span>
-                    {cleanDoi && (
-                      <a
-                        href={doiUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center gap-0.5 text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-350 font-semibold ml-1.5 underline underline-offset-2 break-all"
-                      >
-                        <span>[DOI: {cleanDoi}]</span>
-                        <ExternalLink className="h-2.5 w-2.5" />
-                      </a>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <p className="text-sm text-slate-400 dark:text-slate-500 italic">
-              No references deposited in Crossref metadata.
-            </p>
-          )}
-        </div>
       </div>
 
       {/* Footer Actions */}
