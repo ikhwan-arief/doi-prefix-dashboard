@@ -12,6 +12,7 @@ import { JournalSidebar } from "./components/JournalSidebar";
 import { FilterBar } from "./components/FilterBar";
 import { YearChart } from "./components/YearChart";
 import { JournalChart } from "./components/JournalChart";
+import { AuthorChart } from "./components/AuthorChart";
 import { ArticleTable } from "./components/ArticleTable";
 import { ArticleDetailModal } from "./components/ArticleDetailModal";
 import type { Article } from "./lib/types";
@@ -221,8 +222,13 @@ function App() {
 
         {/* Charts Grid */}
         <section className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-          <YearChart data={dataset.byYear} />
-          <JournalChart data={dataset.byJournal} />
+          <div className="flex flex-col gap-6">
+            <YearChart data={dataset.byYear} />
+            <AuthorChart articles={dataset.articles} />
+          </div>
+          <div>
+            <JournalChart data={dataset.byJournal} />
+          </div>
         </section>
 
         {/* Filter Toolbar */}
@@ -272,6 +278,9 @@ function App() {
           <Info className="h-5 w-5 text-sky-500 flex-shrink-0 mt-0.5" />
           <div className="space-y-2">
             <p className="leading-relaxed">
+              <strong>Data Source:</strong> Crossref REST API (Prefix: 10.25077)
+            </p>
+            <p className="leading-relaxed">
               <strong>Data Quality Caveat:</strong> This dashboard uses Crossref metadata. Missing titles, authors, pages, abstracts, or dates reflect the metadata deposited to Crossref and may not represent the full publisher record.
             </p>
             <p className="leading-relaxed">
@@ -283,7 +292,7 @@ function App() {
         <div className="text-center pt-4 border-t border-slate-100 dark:border-slate-900 space-y-1">
           <p>© {new Date().getFullYear()} DOI Prefix Dashboard. Built for Crossref Prefix 10.25077.</p>
           <p className="text-[11px] text-slate-400 dark:text-slate-500">
-            Aplikasi dikembangkan oleh <strong className="font-semibold text-slate-600 dark:text-slate-400">Ikhwan Arief</strong> (<a href="mailto:ikhwan@unand.ac.id" className="hover:text-sky-500 transition-colors">ikhwan@unand.ac.id</a>)
+            Application developed by <strong className="font-semibold text-slate-600 dark:text-slate-400">Ikhwan Arief</strong> (<a href="mailto:ikhwan@unand.ac.id" className="hover:text-sky-500 transition-colors">ikhwan@unand.ac.id</a>)
           </p>
         </div>
       </footer>

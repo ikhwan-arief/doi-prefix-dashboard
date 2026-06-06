@@ -8,6 +8,32 @@ import { X, ExternalLink, BookOpen, Quote, User, FileText, BadgeCheck } from "lu
 import type { Article } from "../lib/types";
 import { stripHtml, formatDate } from "../lib/normalize";
 
+const getLicenseName = (url?: string): string => {
+  if (!url) return "No License";
+  const lower = url.toLowerCase();
+  
+  if (lower.includes("creativecommons.org/licenses/")) {
+    const match = lower.match(/\/licenses\/([a-z\-]+)\/([0-9\.]+)/);
+    if (match) {
+      const code = match[1].toUpperCase();
+      const version = match[2];
+      return `Creative Commons CC ${code} ${version}`;
+    }
+    return "Creative Commons License";
+  }
+  
+  if (lower.includes("creativecommons.org/publicdomain/zero/1.0")) {
+    return "CC0 1.0 Universal (Public Domain)";
+  }
+  
+  try {
+    const domain = new URL(url).hostname.replace("www.", "");
+    return `License (${domain})`;
+  } catch {
+    return "Registered License";
+  }
+};
+
 interface ArticleDetailModalProps {
   article: Article | null;
   onClose: () => void;
@@ -122,29 +148,34 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
           <div className="space-y-2">
             <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
               <User className="h-3.5 w-3.5" />
-              <span>Authors</span>
+              <span>Authors & Affiliations</span>
             </h4>
-            <div className="flex flex-wrap gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {article.authors.map((author, idx) => (
                 <div
                   key={idx}
-                  className="px-3 py-1.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs font-medium text-slate-700 dark:text-slate-300"
+                  className="flex flex-col gap-1 px-4 py-2.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs text-slate-755 dark:text-slate-300"
                 >
-                  <span className="font-bold">{author.name}</span>
-                  {author.orcid && (
-                    <a
-                      href={author.orcid}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-[10px] text-green-600 hover:text-green-700 dark:text-green-500 ml-1.5 align-middle"
-                      title="View ORCID profile"
-                    >
-                      (ORCID)
-                    </a>
-                  )}
-                  {author.affiliation && author.affiliation.length > 0 && (
-                    <span className="block text-[10px] text-slate-500 dark:text-slate-400 mt-0.5">
+                  <div className="flex items-center flex-wrap gap-1.5">
+                    <span className="font-bold text-slate-800 dark:text-white">{author.name}</span>
+                    {author.orcid && (
+                      <a
+                        href={author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/20"
+                      >
+                        <span>ORCID</span>
+                      </a>
+                    )}
+                  </div>
+                  {author.affiliation && author.affiliation.length > 0 ? (
+                    <span className="text-[11px] text-slate-500 dark:text-slate-450 italic mt-0.5 leading-snug">
                       {author.affiliation.join("; ")}
+                    </span>
+                  ) : (
+                    <span className="text-[11px] text-slate-400 dark:text-slate-500 italic mt-0.5 leading-snug">
+                      No affiliation deposited
                     </span>
                   )}
                 </div>
@@ -228,7 +259,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                   </span>
                 </span>
                 <span>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">References Count:</strong>{" "}
+                  <strong className="font-semibold text-slate-500 dark:text-slate-400">References:</strong>{" "}
                   <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded">
                     {article.referencesCount ?? 0}
                   </span>
@@ -261,23 +292,71 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
         </div>
 
         {/* License Block */}
-        {licenseUrl && (
-          <div className="flex items-center justify-between p-4 bg-sky-50/30 dark:bg-sky-950/15 border border-sky-100 dark:border-sky-950 rounded-xl">
-            <div className="flex items-center gap-2 text-xs text-sky-700 dark:text-sky-300 font-medium">
-              <BadgeCheck className="h-4 w-4 text-sky-500" />
-              <span>This publication is registered with a license.</span>
+        {licenseUrl ? (
+          <div className="flex items-center justify-between p-4 bg-emerald-50/30 dark:bg-emerald-950/15 border border-emerald-100 dark:border-emerald-900/30 rounded-xl">
+            <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
+              <BadgeCheck className="h-4 w-4 text-emerald-500" />
+              <span>
+                License: <strong className="font-bold text-emerald-800 dark:text-emerald-200">{getLicenseName(licenseUrl)}</strong>
+              </span>
             </div>
             <a
               href={licenseUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1 text-xs text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-300 font-semibold"
+              className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-450 dark:hover:text-emerald-350 font-bold underline underline-offset-2"
             >
               <span>View License</span>
               <ExternalLink className="h-3.5 w-3.5" />
             </a>
           </div>
+        ) : (
+          <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-150 dark:border-red-900/40 rounded-xl">
+            <div className="flex items-center gap-2 text-xs text-red-600 dark:text-red-400 font-bold">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              <span>No license deposited in Crossref metadata</span>
+            </div>
+            <span className="text-[10px] text-red-650 dark:text-red-400 font-extrabold uppercase tracking-wider">
+              Warning
+            </span>
+          </div>
         )}
+
+        {/* References list */}
+        <div className="space-y-2">
+          <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
+            <BookOpen className="h-3.5 w-3.5 text-indigo-500" />
+            <span>References ({article.references?.length || 0})</span>
+          </h4>
+          {article.references && article.references.length > 0 ? (
+            <ul className="space-y-2 bg-slate-50/30 dark:bg-slate-950/10 p-4 rounded-xl border border-slate-100 dark:border-slate-850 divide-y divide-slate-100/50 dark:divide-slate-800/30 text-xs">
+              {article.references.map((ref, idx) => {
+                const cleanDoi = ref.doi ? ref.doi.trim() : "";
+                const doiUrl = cleanDoi ? `https://doi.org/${cleanDoi.toLowerCase()}` : "";
+                return (
+                  <li key={ref.key || idx} className={`${idx > 0 ? "pt-2" : ""} text-slate-650 dark:text-slate-350 leading-relaxed break-words`}>
+                    <span>{ref.unstructured || "Untitled Reference"}</span>
+                    {cleanDoi && (
+                      <a
+                        href={doiUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-0.5 text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-350 font-semibold ml-1.5 underline underline-offset-2 break-all"
+                      >
+                        <span>[DOI: {cleanDoi}]</span>
+                        <ExternalLink className="h-2.5 w-2.5" />
+                      </a>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          ) : (
+            <p className="text-sm text-slate-400 dark:text-slate-500 italic">
+              No references deposited in Crossref metadata.
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Footer Actions */}
@@ -292,6 +371,18 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
           >
             Close
           </button>
+          
+          {article.url && (
+            <a
+              href={article.url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-850 rounded-xl transition-all focus:outline-none cursor-pointer"
+            >
+              <span>Open Full Text</span>
+              <ExternalLink className="h-3.5 w-3.5" />
+            </a>
+          )}
           
           <a
             href={article.doiUrl}

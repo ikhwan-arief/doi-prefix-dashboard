@@ -57,14 +57,14 @@ export const RatioMetricsCards: React.FC<RatioMetricsCardsProps> = ({ articles }
   }, [articles]);
 
   const formatNumber = (num: number, decimals: number = 3) => {
-    return new Intl.NumberFormat("id-ID", {
+    return new Intl.NumberFormat("en-US", {
       minimumFractionDigits: decimals,
       maximumFractionDigits: decimals,
     }).format(num);
   };
 
   const formatCount = (num: number) => {
-    return new Intl.NumberFormat("id-ID").format(num);
+    return new Intl.NumberFormat("en-US").format(num);
   };
 
   return (
@@ -80,7 +80,7 @@ export const RatioMetricsCards: React.FC<RatioMetricsCardsProps> = ({ articles }
         <div className="space-y-4">
           <div className="space-y-1">
             <span className="text-xs font-semibold tracking-wider text-indigo-200 uppercase">
-              Rasio Sitasi per Artikel (Citations per Article)
+              Citations per Article Ratio
             </span>
             <h4 className="text-4xl font-extrabold tracking-tight">
               {formatNumber(stats.citationsPerArticle)}
@@ -90,10 +90,10 @@ export const RatioMetricsCards: React.FC<RatioMetricsCardsProps> = ({ articles }
           <div className="pt-2 border-t border-white/10 flex flex-col gap-1.5 text-xs text-indigo-100/90">
             <div className="flex items-center gap-1.5 font-medium">
               <Info className="h-3.5 w-3.5 opacity-80" />
-              Formula: Total Sitasi / Total Artikel
+              Formula: Total Citations / Total Articles
             </div>
             <p className="opacity-75 leading-relaxed">
-              Dihitung dari {formatCount(stats.totalCitations)} total sitasi dibagi {formatCount(stats.totalArticles)} total artikel pada prefix ini.
+              Calculated from {formatCount(stats.totalCitations)} total citations divided by {formatCount(stats.totalArticles)} total articles under this prefix.
             </p>
           </div>
         </div>
@@ -110,7 +110,7 @@ export const RatioMetricsCards: React.FC<RatioMetricsCardsProps> = ({ articles }
         <div className="space-y-4">
           <div className="space-y-1">
             <span className="text-xs font-semibold tracking-wider text-emerald-200 uppercase">
-              Rata-rata Sitasi per Jurnal (Avg Citations per Journal)
+              Average Citations per Journal
             </span>
             <h4 className="text-4xl font-extrabold tracking-tight">
               {formatNumber(stats.avgJournalCitationsPerArticle)}
@@ -120,10 +120,10 @@ export const RatioMetricsCards: React.FC<RatioMetricsCardsProps> = ({ articles }
           <div className="pt-2 border-t border-white/10 flex flex-col gap-1.5 text-xs text-emerald-100/90">
             <div className="flex items-center gap-1.5 font-medium">
               <Info className="h-3.5 w-3.5 opacity-80" />
-              Formula: Mean dari rata-rata sitasi per artikel tiap jurnal
+              Formula: Mean of all journals' average citations per article
             </div>
             <p className="opacity-75 leading-relaxed">
-              Rata-rata dari rata-rata sitasi per artikel pada masing-masing dari {formatCount(stats.journalCount)} jurnal di dalam prefix ini.
+              Average of the average citations per article across each of the {formatCount(stats.journalCount)} journals under this prefix.
             </p>
           </div>
         </div>

@@ -129,6 +129,14 @@ function normalizeArticle(item) {
   const referencesCount = item["reference-count"] || 0;
   const citedByCount = item["is-referenced-by-count"] || 0;
   
+  const references = item.reference
+    ? item.reference.map((ref) => ({
+        key: ref.key,
+        doi: ref.DOI || ref.doi,
+        unstructured: ref.unstructured || "",
+      }))
+    : [];
+
   const depositedDate = item.deposited ? getCrossrefDateString(item.deposited) : undefined;
   const indexedDate = item.indexed ? getCrossrefDateString(item.indexed) : undefined;
   const createdDate = item.created ? getCrossrefDateString(item.created) : undefined;
@@ -161,6 +169,7 @@ function normalizeArticle(item) {
     indexedDate,
     createdDate,
     license,
+    references,
   };
 }
 

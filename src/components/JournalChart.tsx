@@ -94,7 +94,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[650px]">
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[725px]">
       <div className="mb-4">
         <h3 className="text-base font-bold text-slate-800 dark:text-white">
           Top Journals
@@ -104,7 +104,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
         </p>
       </div>
 
-      <div className="h-[550px] w-full">
+      <div className="h-[625px] w-full">
         {top20Data.length === 0 ? (
           <div className="h-full flex items-center justify-center text-slate-400 text-sm">
             No journal data available

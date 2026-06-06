@@ -47,6 +47,11 @@ export type Article = {
   indexedDate?: string;
   createdDate?: string;
   license?: LicenseInfo[];
+  references?: {
+    key?: string;
+    doi?: string;
+    unstructured?: string;
+  }[];
 };
 
 export type DashboardSummary = {
