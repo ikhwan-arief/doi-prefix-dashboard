@@ -247,12 +247,6 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                     {article.citedByCount ?? 0}
                   </span>
                 </span>
-                <span>
-                  <strong className="font-semibold text-slate-500 dark:text-slate-400">References:</strong>{" "}
-                  <span className="px-2 py-0.5 bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-bold rounded">
-                    {article.referencesCount ?? 0}
-                  </span>
-                </span>
               </li>
               <li>
                 <strong className="font-semibold text-slate-500 dark:text-slate-400">Published Date:</strong>{" "}
