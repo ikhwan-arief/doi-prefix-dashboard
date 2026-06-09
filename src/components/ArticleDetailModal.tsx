@@ -4,7 +4,7 @@
  */
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
-import { X, ExternalLink, BookOpen, Quote, User, FileText, BadgeCheck } from "lucide-react";
+import { X, ExternalLink, BookOpen, Quote, User, FileText, BadgeCheck, ArrowUpDown, ArrowUp, ArrowDown } from "lucide-react";
 import type { Article, CitationRecord } from "../lib/types";
 import { stripHtml, formatDate } from "../lib/normalize";
 
@@ -13,7 +13,7 @@ const getLicenseName = (url?: string): string => {
   const lower = url.toLowerCase();
   
   if (lower.includes("creativecommons.org/licenses/")) {
-    const match = lower.match(/\/licenses\/([a-z\-]+)\/([0-9\.]+)/);
+    const match = lower.match(/\/licenses\/([a-z-]+)\/([0-9.]+)/);
     if (match) {
       const code = match[1].toUpperCase();
       const version = match[2];
@@ -44,11 +44,19 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [activeTab, setActiveTab] = useState<"details" | "citations">("details");
   const [citingSearchQuery, setCitingSearchQuery] = useState<string>("");
+  const [sortField, setSortField] = useState<"year" | "journal" | null>(null);
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
 
-  useEffect(() => {
+  const [prevArticleId, setPrevArticleId] = useState<string | null>(null);
+  const currentArticleId = article?.doi || null;
+
+  if (currentArticleId !== prevArticleId) {
+    setPrevArticleId(currentArticleId);
     setActiveTab("details");
     setCitingSearchQuery("");
-  }, [article]);
+    setSortField(null);
+    setSortDirection("asc");
+  }
 
   useEffect(() => {
     const dialog = dialogRef.current;
@@ -105,19 +113,55 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
     return citationIndex?.[citedDoi] || [];
   }, [article, citedDoi, citationIndex]);
 
-  const filteredCitingArticles = useMemo(() => {
-    if (!citingSearchQuery.trim()) return citingArticles;
-    const q = citingSearchQuery.toLowerCase();
-    return citingArticles.filter(
-      (c) =>
-        (c.citingTitle || "").toLowerCase().includes(q) ||
-        (c.citingJournal || "").toLowerCase().includes(q) ||
-        (c.citingDoi || "").toLowerCase().includes(q) ||
-        (c.citingPublisher || "").toLowerCase().includes(q) ||
-        String(c.citingYear || "").includes(q) ||
-        (c.citingAuthors || []).some((a) => a.toLowerCase().includes(q))
-    );
-  }, [citingArticles, citingSearchQuery]);
+  const sortedAndFilteredCitingArticles = useMemo(() => {
+    let list = [...citingArticles];
+    if (citingSearchQuery.trim()) {
+      const q = citingSearchQuery.toLowerCase();
+      list = list.filter(
+        (c) =>
+          (c.citingTitle || "").toLowerCase().includes(q) ||
+          (c.citingJournal || "").toLowerCase().includes(q) ||
+          (c.citingDoi || "").toLowerCase().includes(q) ||
+          (c.citingPublisher || "").toLowerCase().includes(q) ||
+          String(c.citingYear || "").includes(q) ||
+          (c.citingAuthors || []).some((a) => a.toLowerCase().includes(q))
+      );
+    }
+
+    if (sortField) {
+      list.sort((a, b) => {
+        let valA: string | number = "";
+        let valB: string | number = "";
+
+        if (sortField === "year") {
+          valA = a.citingYear ?? 0;
+          valB = b.citingYear ?? 0;
+        } else if (sortField === "journal") {
+          valA = (a.citingJournal || "").toLowerCase();
+          valB = (b.citingJournal || "").toLowerCase();
+        }
+
+        if (valA < valB) return sortDirection === "asc" ? -1 : 1;
+        if (valA > valB) return sortDirection === "asc" ? 1 : -1;
+        return 0;
+      });
+    }
+
+    return list;
+  }, [citingArticles, citingSearchQuery, sortField, sortDirection]);
+
+  const handleSort = (field: "year" | "journal") => {
+    if (sortField === field) {
+      if (sortDirection === "asc") {
+        setSortDirection("desc");
+      } else {
+        setSortField(null);
+      }
+    } else {
+      setSortField(field);
+      setSortDirection("asc");
+    }
+  };
 
   if (!article) return null;
 
@@ -386,7 +430,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             </div>
 
             {/* List / Table */}
-            {filteredCitingArticles.length === 0 ? (
+            {sortedAndFilteredCitingArticles.length === 0 ? (
               <div className="flex flex-col items-center justify-center py-12 text-center space-y-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
                 <Quote className="h-8 w-8 text-slate-300 dark:text-slate-700" />
                 <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
@@ -400,16 +444,48 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                 <table className="min-w-full divide-y divide-slate-150 dark:divide-slate-800 text-left text-[11px] leading-normal">
                   <thead className="bg-slate-50 dark:bg-slate-950/40 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px]">
                     <tr>
-                      <th className="px-4 py-3 text-center w-12">Year</th>
+                      <th className="px-4 py-3 text-center w-20">
+                        <button
+                          onClick={() => handleSort("year")}
+                          className="inline-flex items-center justify-center gap-1 hover:text-slate-800 dark:hover:text-white font-bold cursor-pointer focus:outline-none w-full"
+                        >
+                          <span>Year</span>
+                          {sortField === "year" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                            ) : (
+                              <ArrowDown className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                          )}
+                        </button>
+                      </th>
                       <th className="px-4 py-3">Citing Article</th>
-                      <th className="px-4 py-3">Citing Journal</th>
+                      <th className="px-4 py-3">
+                        <button
+                          onClick={() => handleSort("journal")}
+                          className="inline-flex items-center gap-1 hover:text-slate-800 dark:hover:text-white font-bold cursor-pointer focus:outline-none"
+                        >
+                          <span>Citing Journal</span>
+                          {sortField === "journal" ? (
+                            sortDirection === "asc" ? (
+                              <ArrowUp className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                            ) : (
+                              <ArrowDown className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                            )
+                          ) : (
+                            <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                          )}
+                        </button>
+                      </th>
                       <th className="px-4 py-3">Authors</th>
                       <th className="px-4 py-3">Type</th>
                       <th className="px-4 py-3 text-right">Action</th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 text-slate-700 dark:text-slate-350">
-                    {filteredCitingArticles.map((cit, idx) => (
+                    {sortedAndFilteredCitingArticles.map((cit, idx) => (
                       <tr key={idx} className="hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition-colors">
                         <td className="px-4 py-3 text-center font-bold text-slate-800 dark:text-slate-200">
                           {cit.citingYear || "—"}
