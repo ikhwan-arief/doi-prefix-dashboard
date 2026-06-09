@@ -44,8 +44,8 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
   const dialogRef = useRef<HTMLDialogElement>(null);
   const [activeTab, setActiveTab] = useState<"details" | "citations">("details");
   const [citingSearchQuery, setCitingSearchQuery] = useState<string>("");
-  const [sortField, setSortField] = useState<"year" | "journal" | null>(null);
-  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("asc");
+  const [sortField, setSortField] = useState<"year" | "journal" | null>("year");
+  const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
   const [prevArticleId, setPrevArticleId] = useState<string | null>(null);
   const currentArticleId = article?.doi || null;
@@ -54,8 +54,8 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
     setPrevArticleId(currentArticleId);
     setActiveTab("details");
     setCitingSearchQuery("");
-    setSortField(null);
-    setSortDirection("asc");
+    setSortField("year");
+    setSortDirection("desc");
   }
 
   useEffect(() => {
@@ -152,14 +152,22 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
 
   const handleSort = (field: "year" | "journal") => {
     if (sortField === field) {
-      if (sortDirection === "asc") {
-        setSortDirection("desc");
+      if (field === "year") {
+        if (sortDirection === "desc") {
+          setSortDirection("asc");
+        } else {
+          setSortField(null);
+        }
       } else {
-        setSortField(null);
+        if (sortDirection === "asc") {
+          setSortDirection("desc");
+        } else {
+          setSortField(null);
+        }
       }
     } else {
       setSortField(field);
-      setSortDirection("asc");
+      setSortDirection(field === "year" ? "desc" : "asc");
     }
   };
 
