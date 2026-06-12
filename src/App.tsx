@@ -16,7 +16,7 @@ import { AuthorChart } from "./components/AuthorChart";
 import { ArticleTable } from "./components/ArticleTable";
 import { ArticleDetailModal } from "./components/ArticleDetailModal";
 import type { Article } from "./lib/types";
-import { Sun, Moon, Info, ShieldAlert, Award } from "lucide-react";
+import { Info, ShieldAlert } from "lucide-react";
 
 function App() {
   const [dataset, setDataset] = useState<DashboardDataset | null>(null);
@@ -32,18 +32,6 @@ function App() {
   // Modal State
   const [selectedArticle, setSelectedArticle] = useState<Article | null>(null);
 
-  // Dark Mode State
-  const [darkMode, setDarkMode] = useState<boolean>(() => {
-    if (typeof window !== "undefined") {
-      return (
-        localStorage.getItem("theme") === "dark" ||
-        (!localStorage.getItem("theme") &&
-          window.matchMedia("(prefers-color-scheme: dark)").matches)
-      );
-    }
-    return false;
-  });
-
   // Load Data on Mount
   useEffect(() => {
     fetchDashboardData()
@@ -56,17 +44,6 @@ function App() {
         setLoading(false);
       });
   }, []);
-
-  // Sync Dark Mode theme class to HTML element
-  useEffect(() => {
-    if (darkMode) {
-      document.documentElement.classList.add("dark");
-      localStorage.setItem("theme", "dark");
-    } else {
-      document.documentElement.classList.remove("dark");
-      localStorage.setItem("theme", "light");
-    }
-  }, [darkMode]);
 
   // Reset Filters
   const handleResetFilters = () => {
@@ -141,11 +118,11 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 dark:bg-slate-950 transition-colors duration-300">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-seline-cream">
         <div className="flex flex-col items-center gap-4">
           {/* Pulsing loading ring */}
-          <div className="h-10 w-10 border-4 border-sky-500 border-t-transparent rounded-full animate-spin"></div>
-          <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+          <div className="h-10 w-10 border-4 border-seline-blue border-t-transparent rounded-full animate-spin"></div>
+          <span className="text-sm font-medium text-seline-slate">
             Loading publication data...
           </span>
         </div>
@@ -155,19 +132,19 @@ function App() {
 
   if (error || !dataset) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950 px-4">
-        <div className="max-w-md w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xl text-center space-y-4">
-          <div className="inline-flex p-3 rounded-full bg-rose-50 dark:bg-rose-950/20 text-rose-500 border border-rose-100 dark:border-rose-900/30">
+      <div className="min-h-screen flex items-center justify-center bg-seline-cream px-4">
+        <div className="max-w-md w-full bg-seline-white border border-seline-pearl-border rounded-seline-cards p-6 shadow-seline-md text-center space-y-4">
+          <div className="inline-flex p-3 rounded-full bg-seline-wash text-seline-blue border border-seline-pearl-border">
             <ShieldAlert className="h-6 w-6" />
           </div>
-          <h3 className="text-lg font-bold text-slate-800 dark:text-white">
+          <h3 className="text-lg font-display font-medium text-seline-ink">
             Data Load Failed
           </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+          <p className="text-sm text-seline-slate leading-relaxed">
             {error || "Data has not been generated yet. Please run the GitHub Actions workflow: Update Crossref Data and Deploy."}
           </p>
           {error?.includes("not found") && (
-            <div className="text-xs bg-slate-50 dark:bg-slate-950 p-3 rounded-xl border border-slate-100 dark:border-slate-850 text-slate-500 text-left font-mono">
+            <div className="text-xs bg-seline-cream p-3 rounded-md border border-seline-warm-border text-seline-slate text-left font-mono">
               Missing static JSON assets in public/data/. Run "npm run fetch" locally to initialize.
             </div>
           )}
@@ -177,32 +154,39 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-slate-100 transition-colors duration-300">
+    <div className="min-h-screen bg-seline-cream text-seline-ink font-sans transition-all duration-300">
       
       {/* Navbar / Header */}
-      <header className="sticky top-0 z-10 backdrop-blur-md bg-white/80 dark:bg-slate-900/80 border-b border-slate-200/60 dark:border-slate-800/60 transition-all duration-300">
+      <header className="sticky top-0 z-10 backdrop-blur-md bg-seline-cream/80 border-b border-seline-fog-border transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-tr from-sky-500 to-indigo-600 text-white shadow-md shadow-sky-500/15">
-              <Award className="h-5 w-5" />
+            <div className="w-6 h-6 rounded bg-seline-blue flex items-center justify-center text-seline-white text-xs font-bold font-display">
+              A
             </div>
             <div>
-              <h1 className="text-base font-extrabold tracking-tight text-slate-800 dark:text-white">
-                Universitas Andalas Publications List
+              <h1 className="text-base font-display font-medium tracking-tight text-seline-ink">
+                Universitas Andalas
               </h1>
-              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400 -mt-0.5">
-                Prefix 10.25077 • Crossref Catalog
+              <p className="text-[10px] font-medium text-seline-slate -mt-0.5">
+                Publications Catalog
               </p>
             </div>
           </div>
 
-          {/* Theme Toggle Button */}
+          {/* Seline Navigation Middle Section: Metadata Capsule */}
+          <div className="hidden md:flex items-center">
+            <span className="text-[11px] font-medium bg-seline-wash text-seline-ink px-3 py-1 rounded-full">
+              Prefix 10.25077 • Crossref Catalog
+            </span>
+          </div>
+
+          {/* Seline Right Section: Primary CTA Filled Button */}
           <button
-            onClick={() => setDarkMode(!darkMode)}
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all cursor-pointer"
-            title={darkMode ? "Switch to Light Mode" : "Switch to Dark Mode"}
+            onClick={handleExportCSV}
+            disabled={filteredArticles.length === 0}
+            className="bg-seline-blue text-seline-white text-xs font-medium px-4.5 py-2.5 rounded-full hover:opacity-90 transition-all cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
           >
-            {darkMode ? <Sun className="h-4.5 w-4.5" /> : <Moon className="h-4.5 w-4.5" />}
+            Export CSV
           </button>
         </div>
       </header>
@@ -271,28 +255,28 @@ function App() {
       </main>
 
       {/* Footer Details */}
-      <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-slate-200/60 dark:border-slate-800/60 text-xs text-slate-500 dark:text-slate-400 space-y-4">
+      <footer className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 border-t border-seline-pearl-border text-xs text-seline-slate space-y-4">
         
         {/* Footnotes */}
-        <div className="flex flex-col sm:flex-row items-start gap-4 p-4 bg-slate-100/50 dark:bg-slate-900/30 rounded-2xl border border-slate-150 dark:border-slate-850">
-          <Info className="h-5 w-5 text-sky-500 flex-shrink-0 mt-0.5" />
+        <div className="flex flex-col sm:flex-row items-start gap-4 p-4 bg-seline-white rounded-seline-cards border border-seline-pearl-border">
+          <Info className="h-5 w-5 text-seline-blue flex-shrink-0 mt-0.5" />
           <div className="space-y-2">
             <p className="leading-relaxed">
-              <strong>Data Source:</strong> Crossref REST API (Prefix: 10.25077)
+              <strong className="text-seline-ink font-semibold">Data Source:</strong> Crossref REST API (Prefix: 10.25077)
             </p>
             <p className="leading-relaxed">
-              <strong>Data Quality Caveat:</strong> This dashboard uses Crossref metadata. Missing titles, authors, pages, abstracts, or dates reflect the metadata deposited to Crossref and may not represent the full publisher record.
+              <strong className="text-seline-ink font-semibold">Data Quality Caveat:</strong> This dashboard uses Crossref metadata. Missing titles, authors, pages, abstracts, or dates reflect the metadata deposited to Crossref and may not represent the full publisher record.
             </p>
             <p className="leading-relaxed">
-              <strong>Citation Warning:</strong> Crossref cited-by count is not the same as Scopus, Web of Science, or Google Scholar citation count. Crossref only counts citations from other publications participating in the Crossref Cited-by service.
+              <strong className="text-seline-ink font-semibold">Citation Warning:</strong> Crossref cited-by count is not the same as Scopus, Web of Science, or Google Scholar citation count. Crossref only counts citations from other publications participating in the Crossref Cited-by service.
             </p>
           </div>
         </div>
 
-        <div className="text-center pt-4 border-t border-slate-100 dark:border-slate-900 space-y-1">
+        <div className="text-center pt-4 border-t border-seline-fog-border space-y-1">
           <p>© {new Date().getFullYear()} Universitas Andalas Publications List. Built for Crossref Prefix 10.25077.</p>
-          <p className="text-[11px] text-slate-400 dark:text-slate-500">
-            Application developed by <strong className="font-semibold text-slate-600 dark:text-slate-400">Ikhwan Arief</strong> (<a href="mailto:ikhwan[at]unand.ac.id" className="hover:text-sky-500 transition-colors">ikhwan[at]unand.ac.id</a>)
+          <p className="text-[11px] text-seline-soft-slate">
+            Application developed by <strong className="font-medium text-seline-ink">Ikhwan Arief</strong> (<a href="mailto:ikhwan[at]unand.ac.id" className="hover:text-seline-blue transition-colors">ikhwan[at]unand.ac.id</a>)
           </p>
         </div>
       </footer>

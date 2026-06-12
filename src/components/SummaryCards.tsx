@@ -1,10 +1,10 @@
 /**
  * DOI Prefix Publication Dashboard - Summary Cards Component
- * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
+ * Redesigned to Seline Analytics Stat Blocks
  */
 
 import React from "react";
-import { FileText, BookOpen, MessageSquare, Calendar, RefreshCw } from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import type { DashboardSummary } from "../lib/types";
 import { formatDate } from "../lib/normalize";
 
@@ -21,65 +21,50 @@ export const SummaryCards: React.FC<SummaryCardsProps> = ({ summary }) => {
     {
       title: "Total Articles",
       value: formatNumber(summary.totalArticles),
-      icon: <FileText className="h-6 w-6 text-sky-500" />,
-      description: "Journal articles registered in Crossref",
-      bgColor: "bg-sky-50/50 dark:bg-sky-950/20 border-sky-100 dark:border-sky-900/50",
+      description: "Registered publications in Crossref",
     },
     {
       title: "Total Journals",
       value: formatNumber(summary.totalJournals),
-      icon: <BookOpen className="h-6 w-6 text-indigo-500" />,
-      description: "Distinct journals publishing under prefix",
-      bgColor: "bg-indigo-50/50 dark:bg-indigo-950/20 border-indigo-100 dark:border-indigo-900/50",
+      description: "Active journals under prefix",
     },
     {
       title: "Total Citations",
       value: formatNumber(summary.totalCitationsInCrossref),
-      icon: <MessageSquare className="h-6 w-6 text-emerald-500" />,
-      description: "Total cited-by counts on Crossref",
-      bgColor: "bg-emerald-50/50 dark:bg-emerald-950/20 border-emerald-100 dark:border-emerald-900/50",
+      description: "Cited-by counts on Crossref",
     },
     {
       title: "Year Range",
       value: `${summary.firstYear} – ${summary.latestYear}`,
-      icon: <Calendar className="h-6 w-6 text-amber-500" />,
-      description: "Coverage period of active deposits",
-      bgColor: "bg-amber-50/50 dark:bg-amber-950/20 border-amber-100 dark:border-amber-900/50",
+      description: "Active deposit coverage period",
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-      {cards.map((card, idx) => (
-        <div
-          key={idx}
-          className={`flex flex-col p-5 rounded-2xl border transition-all duration-300 hover:shadow-md ${card.bgColor}`}
-        >
-          <div className="flex justify-between items-start mb-3">
-            <span className="text-sm font-semibold text-slate-500 dark:text-slate-400">
+    <div className="space-y-6">
+      {/* Stat Blocks Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-4">
+        {cards.map((card, idx) => (
+          <div key={idx} className="flex flex-col">
+            <span className="text-[12px] font-medium text-seline-slate uppercase tracking-wider">
               {card.title}
             </span>
-            <div className="p-2 rounded-xl bg-white dark:bg-slate-900 shadow-sm border border-slate-100 dark:border-slate-800">
-              {card.icon}
-            </div>
+            <span className="text-4xl lg:text-[48px] font-display font-medium text-seline-ink tracking-tight mt-4 leading-none">
+              {card.value}
+            </span>
+            <span className="text-xs text-seline-slate mt-2">
+              {card.description}
+            </span>
           </div>
-          <span className="text-3xl font-extrabold text-slate-800 dark:text-white tracking-tight">
-            {card.value}
-          </span>
-          <span className="text-xs text-slate-500 dark:text-slate-400 mt-2 font-medium">
-            {card.description}
-          </span>
-        </div>
-      ))}
+        ))}
+      </div>
 
-      {/* Sync Status Info Card */}
-      <div className="sm:col-span-2 lg:col-span-4 flex items-center justify-between p-4 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50 backdrop-blur-sm text-xs text-slate-500 dark:text-slate-400">
-        <div className="flex items-center gap-2">
-          <RefreshCw className="h-3.5 w-3.5 text-slate-400 animate-spin-slow" />
-          <span>
-            Last Sync: <strong className="font-semibold text-slate-700 dark:text-slate-300">{formatDate(summary.lastSync.substring(0, 10))} {summary.lastSync.substring(11, 16)} UTC</strong>
-          </span>
-        </div>
+      {/* Sync Status Info Card - Minimalist */}
+      <div className="flex items-center gap-2 py-2 text-xs text-seline-slate border-t border-seline-pearl-border">
+        <RefreshCw className="h-3.5 w-3.5 text-seline-slate animate-spin-slow" />
+        <span>
+          Last Sync: <strong className="font-medium text-seline-ink">{formatDate(summary.lastSync.substring(0, 10))} {summary.lastSync.substring(11, 16)} UTC</strong>
+        </span>
       </div>
     </div>
   );

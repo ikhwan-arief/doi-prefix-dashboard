@@ -48,19 +48,19 @@ export const AuthorChart: React.FC<AuthorChartProps> = ({ articles }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[350px]">
+    <div className="bg-seline-white rounded-seline-cards border border-seline-pearl-border p-5 shadow-seline-sm flex flex-col h-[350px]">
       <div className="mb-4">
-        <h3 className="text-base font-bold text-slate-800 dark:text-white">
+        <h3 className="text-base font-display font-medium text-seline-ink">
           Most Active Authors
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-seline-slate">
           Top 10 authors sorted by total registered publications
         </p>
       </div>
 
       <div className="h-[250px] w-full">
         {top10Authors.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-slate-400 text-sm">
+          <div className="h-full flex items-center justify-center text-seline-slate text-sm">
             No author data available
           </div>
         ) : (
@@ -70,21 +70,14 @@ export const AuthorChart: React.FC<AuthorChartProps> = ({ articles }) => {
               layout="vertical"
               margin={{ top: 5, right: 15, left: 10, bottom: 5 }}
             >
-              <defs>
-                <linearGradient id="authorGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#8b5cf6" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#a78bfa" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 horizontal={false}
-                stroke="#f1f5f9"
-                className="dark:stroke-slate-800"
+                stroke="#e5e7eb"
               />
               <XAxis
                 type="number"
-                stroke="#94a3b8"
+                stroke="#78716c"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -93,7 +86,7 @@ export const AuthorChart: React.FC<AuthorChartProps> = ({ articles }) => {
               <YAxis
                 type="category"
                 dataKey="name"
-                stroke="#94a3b8"
+                stroke="#78716c"
                 fontSize={11}
                 tickFormatter={formatAuthorTick}
                 width={150}
@@ -102,15 +95,15 @@ export const AuthorChart: React.FC<AuthorChartProps> = ({ articles }) => {
                 interval={0}
               />
               <Tooltip
-                cursor={{ fill: "rgba(139, 92, 246, 0.08)" }}
+                cursor={{ fill: "rgba(193, 225, 247, 0.15)" }}
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="bg-white dark:bg-slate-955 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-lg text-xs max-w-[280px] break-words">
-                        <p className="font-semibold text-violet-600 dark:text-violet-400 mb-1">
+                      <div className="bg-seline-white border border-seline-pearl-border p-3 rounded-md shadow-seline-sm text-xs max-w-[280px] break-words">
+                        <p className="font-medium text-seline-blue mb-1">
                           {payload[0].payload.name}
                         </p>
-                        <p className="font-bold text-slate-800 dark:text-white mt-1">
+                        <p className="font-medium text-seline-ink mt-1">
                           {payload[0].value} Publications
                         </p>
                       </div>
@@ -121,7 +114,7 @@ export const AuthorChart: React.FC<AuthorChartProps> = ({ articles }) => {
               />
               <Bar
                 dataKey="count"
-                fill="url(#authorGradient)"
+                fill="#3ba6f1"
                 radius={[0, 4, 4, 0]}
                 maxBarSize={18}
               />

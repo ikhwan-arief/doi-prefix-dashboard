@@ -86,52 +86,52 @@ export const JournalSidebar: React.FC<JournalSidebarProps> = ({
   }, [journalStats, searchQuery, showInconsistentOnly]);
 
   return (
-    <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col h-[750px] w-full">
+    <div className="bg-seline-white border border-seline-pearl-border rounded-seline-cards p-4 shadow-seline-sm flex flex-col h-[750px] w-full">
       {/* Sidebar Header */}
       <div className="space-y-3 mb-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-bold text-slate-800 dark:text-white flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4 text-sky-500" />
+          <h3 className="text-sm font-display font-medium text-seline-ink flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-seline-blue" />
             Journals Directory
           </h3>
-          <span className="text-[11px] font-semibold bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 px-2 py-0.5 rounded-full">
+          <span className="text-[11px] font-medium bg-seline-cream text-seline-slate px-2 py-0.5 rounded-full border border-seline-pearl-border">
             {filteredJournals.length} of {journalStats.length}
           </span>
         </div>
 
         {/* Search Journals */}
         <div className="relative">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
+          <Search className="absolute left-3 top-2.5 h-4 w-4 text-seline-soft-slate" />
           <input
             type="text"
             placeholder="Search journal..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-800 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-sky-500 focus:border-sky-500 transition-all"
+            className="w-full pl-9 pr-4 py-2 text-xs rounded-seline-inputs border border-seline-warm-border bg-seline-white text-seline-ink placeholder-seline-soft-slate focus:outline-none focus:border-seline-blue focus:ring-1 focus:ring-seline-blue transition-all h-[36px]"
           />
         </div>
 
         {/* Toggle Show Inconsistent Only */}
         <button
           onClick={() => setShowInconsistentOnly(!showInconsistentOnly)}
-          className={`w-full flex items-center justify-between p-2.5 rounded-xl border text-xs font-semibold transition-all cursor-pointer ${
+          className={`w-full flex items-center justify-between p-2.5 rounded-seline-inputs border text-xs font-medium transition-all cursor-pointer ${
             showInconsistentOnly
-              ? "bg-amber-50 dark:bg-amber-950/20 border-amber-200 dark:border-amber-900/50 text-amber-700 dark:text-amber-400"
-              : "bg-slate-50 dark:bg-slate-950 border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
+              ? "bg-seline-wash border-seline-blue text-seline-ink"
+              : "bg-seline-white border-seline-warm-border text-seline-slate hover:bg-seline-cream"
           }`}
         >
           <span className="flex items-center gap-2">
-            <AlertTriangle className={`h-3.5 w-3.5 ${showInconsistentOnly ? "text-amber-500" : "text-slate-400"}`} />
+            <AlertTriangle className={`h-3.5 w-3.5 ${showInconsistentOnly ? "text-seline-blue" : "text-seline-soft-slate"}`} />
             Show Inconsistent Only
           </span>
-          <span className={`h-2 w-2 rounded-full ${showInconsistentOnly ? "bg-amber-500 animate-pulse" : "bg-slate-350 dark:bg-slate-700"}`}></span>
+          <span className={`h-2 w-2 rounded-full ${showInconsistentOnly ? "bg-seline-blue animate-pulse" : "bg-seline-mist-gray"}`}></span>
         </button>
       </div>
 
       {/* Journal List */}
       <div className="flex-1 overflow-y-auto min-h-0 space-y-2 pr-1 scrollbar-thin">
         {filteredJournals.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-center p-4 text-xs text-slate-400 dark:text-slate-500">
+          <div className="h-full flex items-center justify-center text-center p-4 text-xs text-seline-slate">
             No journals found matching the criteria
           </div>
         ) : (
@@ -144,33 +144,33 @@ export const JournalSidebar: React.FC<JournalSidebarProps> = ({
                 onClick={() => onSelectJournal(isSelected ? "" : jr.name)}
                 className={`group relative p-3 rounded-xl border transition-all duration-200 cursor-pointer flex flex-col gap-1.5 ${
                   isSelected
-                    ? "bg-sky-500 text-white border-sky-500 shadow-md shadow-sky-500/10"
+                    ? "bg-seline-blue text-seline-white border-seline-blue shadow-seline-sm"
                     : jr.isInconsistent
-                    ? "bg-rose-50/50 dark:bg-rose-950/10 border-rose-100 dark:border-rose-900/30 hover:bg-rose-50 dark:hover:bg-rose-950/20"
-                    : "bg-white dark:bg-slate-900 border-slate-150 dark:border-slate-800 hover:bg-slate-50 dark:hover:bg-slate-800/40"
+                    ? "bg-seline-cream border-seline-warm-border hover:bg-seline-wash/10"
+                    : "bg-seline-white border-seline-pearl-border hover:bg-seline-cream"
                 }`}
               >
                 {/* Name & Count Row */}
                 <div className="flex items-start justify-between gap-2">
                   <span
-                    className={`text-xs font-bold leading-tight line-clamp-2 ${
+                    className={`text-xs font-medium leading-tight line-clamp-2 ${
                       isSelected
-                        ? "text-white"
+                        ? "text-seline-white"
                         : jr.isInconsistent
-                        ? "text-rose-600 dark:text-rose-400 font-extrabold"
-                        : "text-slate-700 dark:text-slate-300"
+                        ? "text-seline-ink font-semibold"
+                        : "text-seline-ink"
                     }`}
                   >
                     {jr.name}
                   </span>
                   
                   <span
-                    className={`text-[10px] font-bold px-2 py-0.5 rounded-full flex-shrink-0 ${
+                    className={`text-[10px] font-medium px-2 py-0.5 rounded-full flex-shrink-0 ${
                       isSelected
-                        ? "bg-white/20 text-white"
+                        ? "bg-seline-white/20 text-seline-white"
                         : jr.isInconsistent
-                        ? "bg-rose-100 dark:bg-rose-950/40 text-rose-700 dark:text-rose-350"
-                        : "bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                        ? "bg-seline-white border border-seline-warm-border text-seline-slate"
+                        : "bg-seline-cream border border-seline-pearl-border text-seline-slate"
                     }`}
                   >
                     {jr.count}
@@ -180,20 +180,20 @@ export const JournalSidebar: React.FC<JournalSidebarProps> = ({
                 {/* Suffix Detail Row for Inconsistent */}
                 {jr.isInconsistent && (
                   <div
-                    className={`text-[10px] p-2 rounded-lg border leading-normal mt-1 flex flex-col gap-1 ${
+                    className={`text-[10px] p-2 rounded-md border leading-normal mt-1 flex flex-col gap-1 ${
                       isSelected
-                        ? "bg-white/10 border-white/20 text-sky-100"
-                        : "bg-rose-50 dark:bg-rose-950/20 border-rose-100/60 dark:border-rose-900/20 text-rose-500 dark:text-rose-450"
+                        ? "bg-seline-white/10 border-white/20 text-seline-white"
+                        : "bg-seline-white border-seline-pearl-border text-seline-slate"
                     }`}
                   >
-                    <div className="flex items-center gap-1 font-semibold uppercase tracking-wider text-[9px]">
+                    <div className="flex items-center gap-1 font-semibold uppercase tracking-wider text-[9px] text-seline-blue">
                       <AlertTriangle className="h-3 w-3 flex-shrink-0" />
                       Inconsistent Suffix Pattern
                     </div>
                     {jr.suffixTokens.length > 1 && (
                       <div>
                         <span className="opacity-80">Suffixes:</span>{" "}
-                        <code className="font-mono bg-white/40 dark:bg-black/20 px-1 rounded">
+                        <code className={`font-mono px-1 rounded ${isSelected ? "bg-white/20" : "bg-seline-cream"}`}>
                           {jr.suffixTokens.join(", ")}
                         </code>
                       </div>
@@ -201,7 +201,7 @@ export const JournalSidebar: React.FC<JournalSidebarProps> = ({
                     {jr.doiPrefixes.length > 1 && (
                       <div>
                         <span className="opacity-80">Prefixes:</span>{" "}
-                        <code className="font-mono bg-white/40 dark:bg-black/20 px-1 rounded">
+                        <code className={`font-mono px-1 rounded ${isSelected ? "bg-white/20" : "bg-seline-cream"}`}>
                           {jr.doiPrefixes.join(", ")}
                         </code>
                       </div>
@@ -211,7 +211,7 @@ export const JournalSidebar: React.FC<JournalSidebarProps> = ({
 
                 {/* Selected Checkmark overlay */}
                 {isSelected && (
-                  <div className="absolute right-2 bottom-2 bg-white/20 rounded-full p-0.5 text-white">
+                  <div className="absolute right-2 bottom-2 bg-seline-white/20 rounded-full p-0.5 text-seline-white">
                     <Check className="h-3 w-3" />
                   </div>
                 )}

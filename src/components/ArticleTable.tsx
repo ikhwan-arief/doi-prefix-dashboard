@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - Article Table Component
- * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
+ * Redesigned to Seline Analytics Style Guidelines
  */
 
 import React, { useState, useMemo } from "react";
@@ -35,7 +35,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
         header: ({ column }) => (
           <button
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="flex items-center gap-1 hover:text-slate-800 dark:hover:text-white font-bold cursor-pointer"
+            className="flex items-center gap-1 hover:text-seline-blue font-medium cursor-pointer"
           >
             <span>Year</span>
             {column.getIsSorted() === "asc" ? (
@@ -43,12 +43,12 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
             ) : column.getIsSorted() === "desc" ? (
               <ArrowDown className="h-3 w-3" />
             ) : (
-              <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
+              <ArrowUpDown className="h-3.5 w-3.5 text-seline-soft-slate" />
             )}
           </button>
         ),
         cell: (info) => (
-          <span className="font-semibold text-slate-700 dark:text-slate-300">
+          <span className="font-medium text-seline-ink text-sm">
             {info.getValue() as number ?? "-"}
           </span>
         ),
@@ -62,11 +62,11 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
           const article = info.row.original;
           return (
             <div className="flex flex-col">
-              <span className="font-bold text-slate-800 dark:text-slate-100 leading-snug line-clamp-2">
+              <span className="font-semibold text-seline-ink leading-snug line-clamp-2">
                 {title}
               </span>
               {article.subtitle && (
-                <span className="text-xs text-slate-500 dark:text-slate-400 mt-0.5 line-clamp-1 italic">
+                <span className="text-xs text-seline-slate mt-0.5 line-clamp-1 italic">
                   {article.subtitle}
                 </span>
               )}
@@ -81,7 +81,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
         cell: (info) => {
           const authors = info.getValue() as any[];
           return (
-            <span className="text-slate-600 dark:text-slate-300 text-[13px] line-clamp-2">
+            <span className="text-seline-slate text-[13px] line-clamp-2">
               {formatAuthorsList(authors)}
             </span>
           );
@@ -92,7 +92,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
         accessorKey: "journal",
         header: "Journal",
         cell: (info) => (
-          <span className="text-slate-600 dark:text-slate-300 text-[13px] line-clamp-2 font-medium">
+          <span className="text-seline-slate text-[13px] line-clamp-2 font-medium">
             {info.getValue() as string}
           </span>
         ),
@@ -103,7 +103,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
         header: ({ column }) => (
           <button
             onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-            className="flex items-center gap-1 hover:text-slate-800 dark:hover:text-white font-bold cursor-pointer"
+            className="flex items-center gap-1 hover:text-seline-blue font-medium cursor-pointer"
           >
             <span>Cited By</span>
             {column.getIsSorted() === "asc" ? (
@@ -111,14 +111,21 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
             ) : column.getIsSorted() === "desc" ? (
               <ArrowDown className="h-3 w-3" />
             ) : (
-              <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
+              <ArrowUpDown className="h-3.5 w-3.5 text-seline-soft-slate" />
             )}
           </button>
         ),
         cell: (info) => {
           const count = info.getValue() as number;
           return (
-            <span className="px-2.5 py-1 text-xs font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-355 rounded-full" title="Citations counted directly by Crossref">
+            <span 
+              className={`px-2.5 py-0.5 text-xs font-medium rounded-full ${
+                count > 0 
+                  ? "bg-seline-wash text-seline-ink font-semibold" 
+                  : "bg-seline-cream border border-seline-pearl-border text-seline-slate"
+              }`}
+              title="Citations counted directly by Crossref"
+            >
               {count}
             </span>
           );
@@ -135,7 +142,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
               <button
                 onClick={() => onViewDetails(article)}
                 title="View full details"
-                className="flex items-center justify-center p-2 text-sky-600 hover:text-sky-700 hover:bg-sky-50 dark:hover:bg-sky-950/35 rounded-lg border border-sky-100 dark:border-sky-900/30 transition-all cursor-pointer"
+                className="flex items-center justify-center p-2 text-seline-blue hover:bg-seline-wash/20 border border-seline-pearl-border rounded-full transition-all cursor-pointer"
               >
                 <Eye className="h-4 w-4" />
               </button>
@@ -145,7 +152,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
                 target="_blank"
                 rel="noopener noreferrer"
                 title="Open DOI link"
-                className="flex items-center justify-center p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-slate-300 dark:hover:bg-slate-800 rounded-lg border border-slate-100 dark:border-slate-800 transition-all cursor-pointer"
+                className="flex items-center justify-center p-2 text-seline-slate hover:text-seline-ink border border-seline-pearl-border hover:bg-seline-cream rounded-full transition-all cursor-pointer"
               >
                 <ExternalLink className="h-4 w-4" />
               </a>
@@ -173,17 +180,17 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
   });
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 shadow-sm overflow-hidden flex flex-col">
+    <div className="bg-seline-white rounded-seline-cards border border-seline-pearl-border shadow-seline-sm overflow-hidden flex flex-col">
       {/* Table Container */}
       <div className="overflow-x-auto min-w-full">
-        <table className="min-w-full divide-y divide-slate-150 dark:divide-slate-800 text-left">
-          <thead className="bg-slate-50 dark:bg-slate-950 text-slate-500 dark:text-slate-400 text-xs font-semibold uppercase tracking-wider">
+        <table className="min-w-full divide-y divide-seline-pearl-border text-left">
+          <thead className="bg-seline-cream text-seline-slate text-xs font-medium uppercase tracking-wider">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id}>
                 {headerGroup.headers.map((header) => (
                   <th
                     key={header.id}
-                    className="px-6 py-4 font-semibold text-slate-500 dark:text-slate-400"
+                    className="px-6 py-4 font-medium text-seline-slate"
                     style={{ width: header.column.getSize() }}
                   >
                     {header.isPlaceholder
@@ -197,12 +204,12 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
               </tr>
             ))}
           </thead>
-          <tbody className="divide-y divide-slate-150 dark:divide-slate-800 bg-white dark:bg-slate-900">
+          <tbody className="divide-y divide-seline-pearl-border bg-seline-white text-seline-ink">
             {table.getRowModel().rows.length === 0 ? (
               <tr>
                 <td
                   colSpan={columns.length}
-                  className="px-6 py-10 text-center text-slate-500 dark:text-slate-400 text-sm font-medium"
+                  className="px-6 py-10 text-center text-seline-slate text-sm font-medium"
                 >
                   No matching publications found.
                 </td>
@@ -211,7 +218,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
               table.getRowModel().rows.map((row) => (
                 <tr
                   key={row.id}
-                  className="hover:bg-slate-50/50 dark:hover:bg-slate-950/20 transition-all"
+                  className="hover:bg-seline-cream/40 transition-all"
                 >
                   {row.getVisibleCells().map((cell) => (
                     <td
@@ -234,10 +241,10 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
 
       {/* Pagination Controls */}
       {data.length > 0 && (
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 bg-slate-50/50 dark:bg-slate-950/30 border-t border-slate-100 dark:border-slate-850">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 p-5 bg-seline-cream border-t border-seline-pearl-border">
           {/* Page Size Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+            <span className="text-xs text-seline-slate font-medium">
               Rows per page:
             </span>
             <select
@@ -245,7 +252,7 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
               onChange={(e) => {
                 table.setPageSize(Number(e.target.value));
               }}
-              className="px-2 py-1 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-md text-slate-700 dark:text-slate-300 text-xs font-semibold focus:outline-none transition-all cursor-pointer"
+              className="px-2 py-1 bg-seline-white border border-seline-warm-border rounded-seline-inputs text-seline-slate text-xs font-semibold focus:outline-none transition-all cursor-pointer h-[32px]"
             >
               {[10, 25, 50, 100].map((size) => (
                 <option key={size} value={size}>
@@ -260,25 +267,25 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
             <button
               onClick={() => table.setPageIndex(0)}
               disabled={!table.getCanPreviousPage()}
-              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className="p-2 rounded-full border border-seline-pearl-border bg-seline-white text-seline-slate hover:bg-seline-cream disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               <ChevronsLeft className="h-4 w-4" />
             </button>
             <button
               onClick={() => table.previousPage()}
               disabled={!table.getCanPreviousPage()}
-              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className="p-2 rounded-full border border-seline-pearl-border bg-seline-white text-seline-slate hover:bg-seline-cream disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               <ChevronLeft className="h-4 w-4" />
             </button>
 
-            <span className="text-xs text-slate-500 dark:text-slate-400 font-semibold px-3">
+            <span className="text-xs text-seline-slate font-medium px-3">
               Page{" "}
-              <strong className="text-slate-700 dark:text-slate-200 font-bold">
+              <strong className="text-seline-ink font-semibold">
                 {table.getState().pagination.pageIndex + 1}
               </strong>{" "}
               of{" "}
-              <strong className="text-slate-700 dark:text-slate-200 font-bold">
+              <strong className="text-seline-ink font-semibold">
                 {table.getPageCount()}
               </strong>
             </span>
@@ -286,14 +293,14 @@ export const ArticleTable: React.FC<ArticleTableProps> = ({ data, onViewDetails 
             <button
               onClick={() => table.nextPage()}
               disabled={!table.getCanNextPage()}
-              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className="p-2 rounded-full border border-seline-pearl-border bg-seline-white text-seline-slate hover:bg-seline-cream disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               <ChevronRight className="h-4 w-4" />
             </button>
             <button
               onClick={() => table.setPageIndex(table.getPageCount() - 1)}
               disabled={!table.getCanNextPage()}
-              className="p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-500 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
+              className="p-2 rounded-full border border-seline-pearl-border bg-seline-white text-seline-slate hover:bg-seline-cream disabled:opacity-40 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               <ChevronsRight className="h-4 w-4" />
             </button>

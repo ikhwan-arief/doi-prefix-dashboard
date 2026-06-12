@@ -28,19 +28,19 @@ export const YearChart: React.FC<YearChartProps> = ({ data }) => {
   });
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[350px]">
+    <div className="bg-seline-white rounded-seline-cards border border-seline-pearl-border p-5 shadow-seline-sm flex flex-col h-[350px]">
       <div className="mb-4">
-        <h3 className="text-base font-bold text-slate-800 dark:text-white">
+        <h3 className="text-base font-display font-medium text-seline-ink">
           Publications over Time
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-seline-slate">
           Distribution of publications by year
         </p>
       </div>
 
       <div className="h-[260px] w-full">
         {sortedData.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-slate-400 text-sm">
+          <div className="h-full flex items-center justify-center text-seline-slate text-sm">
             No year data available
           </div>
         ) : (
@@ -49,42 +49,35 @@ export const YearChart: React.FC<YearChartProps> = ({ data }) => {
               data={sortedData}
               margin={{ top: 5, right: 10, left: -20, bottom: 5 }}
             >
-              <defs>
-                <linearGradient id="yearGradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0ea5e9" stopOpacity={0.85} />
-                  <stop offset="100%" stopColor="#0369a1" stopOpacity={0.2} />
-                </linearGradient>
-              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 vertical={false}
-                stroke="#f1f5f9"
-                className="dark:stroke-slate-800"
+                stroke="#e5e7eb"
               />
               <XAxis
                 dataKey="year"
-                stroke="#94a3b8"
+                stroke="#78716c"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
               />
               <YAxis
-                stroke="#94a3b8"
+                stroke="#78716c"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
                 allowDecimals={false}
               />
               <Tooltip
-                cursor={{ fill: "rgba(224, 242, 254, 0.15)" }}
+                cursor={{ fill: "rgba(193, 225, 247, 0.15)" }}
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-lg text-xs">
-                        <p className="font-semibold text-slate-500 dark:text-slate-400">
+                      <div className="bg-seline-white border border-seline-pearl-border p-3 rounded-md shadow-seline-sm text-xs">
+                        <p className="font-medium text-seline-slate">
                           Year: {payload[0].payload.year}
                         </p>
-                        <p className="font-bold text-slate-800 dark:text-white mt-1">
+                        <p className="font-medium text-seline-ink mt-1">
                           {payload[0].value} Publications
                         </p>
                       </div>
@@ -95,7 +88,7 @@ export const YearChart: React.FC<YearChartProps> = ({ data }) => {
               />
               <Bar
                 dataKey="count"
-                fill="url(#yearGradient)"
+                fill="#3ba6f1"
                 radius={[4, 4, 0, 0]}
                 maxBarSize={40}
               />

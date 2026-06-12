@@ -68,7 +68,7 @@ const CustomYAxisTick = (props: any) => {
           y={4}
           textAnchor="end"
           fontSize={11}
-          className="fill-slate-500 dark:fill-slate-400 hover:fill-indigo-600 dark:hover:fill-indigo-400 hover:font-bold transition-all duration-150 cursor-pointer select-none"
+          className="fill-seline-slate hover:fill-seline-blue hover:font-bold transition-all duration-150 cursor-pointer select-none"
           style={{ cursor: "pointer" }}
         >
           {formattedName}
@@ -94,19 +94,19 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
   };
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-150 dark:border-slate-800 p-5 shadow-sm flex flex-col h-[725px]">
+    <div className="bg-seline-white rounded-seline-cards border border-seline-pearl-border p-5 shadow-seline-sm flex flex-col h-[725px]">
       <div className="mb-4">
-        <h3 className="text-base font-bold text-slate-800 dark:text-white">
+        <h3 className="text-base font-display font-medium text-seline-ink">
           Top Journals
         </h3>
-        <p className="text-xs text-slate-500 dark:text-slate-400">
+        <p className="text-xs text-seline-slate">
           Distribution across top 20 journals by article count (Click label or bar to open website)
         </p>
       </div>
 
       <div className="h-[625px] w-full">
         {top20Data.length === 0 ? (
-          <div className="h-full flex items-center justify-center text-slate-400 text-sm">
+          <div className="h-full flex items-center justify-center text-seline-slate text-sm">
             No journal data available
           </div>
         ) : (
@@ -116,21 +116,14 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
               layout="vertical"
               margin={{ top: 5, right: 15, left: 20, bottom: 5 }}
             >
-              <defs>
-                <linearGradient id="journalGradient" x1="0" y1="0" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#4f46e5" stopOpacity={0.8} />
-                  <stop offset="100%" stopColor="#6366f1" stopOpacity={0.3} />
-                </linearGradient>
-              </defs>
               <CartesianGrid
                 strokeDasharray="3 3"
                 horizontal={false}
-                stroke="#f1f5f9"
-                className="dark:stroke-slate-800"
+                stroke="#e5e7eb"
               />
               <XAxis
                 type="number"
-                stroke="#94a3b8"
+                stroke="#78716c"
                 fontSize={11}
                 tickLine={false}
                 axisLine={false}
@@ -139,7 +132,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
               <YAxis
                 type="category"
                 dataKey="journal"
-                stroke="#94a3b8"
+                stroke="#78716c"
                 fontSize={11}
                 width={225}
                 interval={0}
@@ -148,18 +141,18 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
                 tick={<CustomYAxisTick />}
               />
               <Tooltip
-                cursor={{ fill: "rgba(99, 102, 241, 0.08)" }}
+                cursor={{ fill: "rgba(193, 225, 247, 0.15)" }}
                 content={({ active, payload }) => {
                   if (active && payload && payload.length) {
                     return (
-                      <div className="bg-white dark:bg-slate-950 border border-slate-100 dark:border-slate-800 p-3 rounded-xl shadow-lg text-xs max-w-[280px] break-words">
-                        <p className="font-semibold text-indigo-600 dark:text-indigo-400 mb-1">
+                      <div className="bg-seline-white border border-seline-pearl-border p-3 rounded-md shadow-seline-sm text-xs max-w-[280px] break-words">
+                        <p className="font-medium text-seline-blue mb-1">
                           {payload[0].payload.journal}
                         </p>
-                        <p className="font-bold text-slate-800 dark:text-white mt-1">
+                        <p className="font-medium text-seline-ink mt-1">
                           {payload[0].value} Publications
                         </p>
-                        <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-2 border-t border-slate-100 dark:border-slate-800 pt-1.5 italic">
+                        <p className="text-[10px] text-seline-slate mt-2 border-t border-seline-pearl-border pt-1.5 italic">
                           Click label or bar to open journal website ↗
                         </p>
                       </div>
@@ -170,7 +163,7 @@ export const JournalChart: React.FC<JournalChartProps> = ({ data }) => {
               />
               <Bar
                 dataKey="count"
-                fill="url(#journalGradient)"
+                fill="#3ba6f1"
                 radius={[0, 4, 4, 0]}
                 maxBarSize={20}
                 style={{ cursor: "pointer" }}

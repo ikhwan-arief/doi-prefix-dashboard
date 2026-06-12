@@ -1,6 +1,6 @@
 /**
  * DOI Prefix Publication Dashboard - Article Detail Modal Component
- * Creator: Ikhwan Arief (ikhwan[at]unand.ac.id)
+ * Redesigned to Seline Analytics Style Guidelines
  */
 
 import React, { useEffect, useRef, useState, useMemo } from "react";
@@ -17,13 +17,13 @@ const getLicenseName = (url?: string): string => {
     if (match) {
       const code = match[1].toUpperCase();
       const version = match[2];
-      return `Creative Commons CC ${code} ${version}`;
+      return `CC ${code} ${version}`;
     }
-    return "Creative Commons License";
+    return "Creative Commons";
   }
   
   if (lower.includes("creativecommons.org/publicdomain/zero/1.0")) {
-    return "CC0 1.0 Universal (Public Domain)";
+    return "CC0 1.0 (Public Domain)";
   }
   
   try {
@@ -190,55 +190,54 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
   return (
     <dialog
       ref={dialogRef}
-      // Pass custom closedby attribute to support declarative light-dismiss
       {...{ closedby: "any" }}
       aria-labelledby="modal-title"
-      className="fixed inset-0 m-auto w-[92%] max-w-3xl max-h-[85vh] bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-0 shadow-2xl flex flex-col focus:outline-none backdrop:bg-slate-900/60 backdrop:backdrop-blur-sm overflow-hidden"
+      className="fixed inset-0 m-auto w-[92%] max-w-3xl max-h-[85vh] bg-seline-white rounded-seline-cards border border-seline-pearl-border p-0 shadow-seline-xl flex flex-col focus:outline-none backdrop:bg-seline-ink/20 backdrop:backdrop-blur-sm overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-start justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40">
+      <div className="flex items-start justify-between p-5 border-b border-seline-pearl-border bg-seline-cream">
         <div className="flex-1 pr-6">
-          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-bold bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-100 dark:border-sky-900/30 mb-2">
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-seline-wash text-seline-ink border border-seline-pearl-border mb-2">
             Journal Article
           </span>
           <h2
             id="modal-title"
-            className="text-lg font-bold text-slate-800 dark:text-white leading-snug"
+            className="text-lg font-display font-medium text-seline-ink leading-snug tracking-tight"
           >
             {article.title}
           </h2>
           {article.subtitle && (
-            <p className="text-sm text-slate-500 dark:text-slate-400 mt-1 italic">
+            <p className="text-sm text-seline-slate mt-1 italic">
               {article.subtitle}
             </p>
           )}
         </div>
         <button
           onClick={() => dialogRef.current?.close()}
-          className="flex items-center justify-center p-1.5 rounded-lg border border-slate-200 dark:border-slate-800 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-all cursor-pointer focus:outline-none"
+          className="flex items-center justify-center p-1.5 rounded-full border border-seline-pearl-border text-seline-slate hover:text-seline-ink hover:bg-seline-cream transition-all cursor-pointer focus:outline-none"
         >
           <X className="h-4 w-4" />
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-slate-150 dark:border-slate-800 bg-slate-50/20 dark:bg-slate-950/20 text-xs">
+      <div className="flex border-b border-seline-pearl-border bg-seline-cream text-xs">
         <button
           onClick={() => setActiveTab("details")}
-          className={`flex-1 py-3 font-bold border-b-2 text-center transition-all cursor-pointer ${
+          className={`flex-1 py-3 font-medium border-b-2 text-center transition-all cursor-pointer ${
             activeTab === "details"
-              ? "border-sky-500 text-sky-600 dark:text-sky-400 bg-sky-50/15"
-              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+              ? "border-seline-blue text-seline-blue bg-seline-white"
+              : "border-transparent text-seline-slate hover:text-seline-ink hover:bg-seline-cream"
           }`}
         >
           Details
         </button>
         <button
           onClick={() => setActiveTab("citations")}
-          className={`flex-1 py-3 font-bold border-b-2 text-center transition-all cursor-pointer ${
+          className={`flex-1 py-3 font-medium border-b-2 text-center transition-all cursor-pointer ${
             activeTab === "citations"
-              ? "border-sky-500 text-sky-600 dark:text-sky-400 bg-sky-50/15"
-              : "border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300"
+              ? "border-seline-blue text-seline-blue bg-seline-white"
+              : "border-transparent text-seline-slate hover:text-seline-ink hover:bg-seline-cream"
           }`}
         >
           Citing Articles ({citingArticles.length})
@@ -252,23 +251,23 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             {/* Authors Section */}
             {article.authors && article.authors.length > 0 && (
               <div className="space-y-2">
-                <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                  <User className="h-3.5 w-3.5" />
+                <h4 className="text-xs font-semibold text-seline-slate uppercase tracking-wider flex items-center gap-1.5">
+                  <User className="h-3.5 w-3.5 text-seline-blue" />
                   <span>Authors</span>
                 </h4>
                 <div className="flex flex-wrap gap-2">
                   {article.authors.map((author, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 px-3 py-1.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/30 text-xs"
+                      className="flex items-center gap-2 px-3 py-1.5 rounded-full border border-seline-pearl-border bg-seline-cream text-xs"
                     >
-                      <span className="font-semibold text-slate-800 dark:text-slate-200">{author.name}</span>
+                      <span className="font-semibold text-seline-ink">{author.name}</span>
                       {author.orcid && (
                         <a
                           href={author.orcid.startsWith("http") ? author.orcid : `https://orcid.org/${author.orcid}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="inline-flex items-center gap-0.5 text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 font-bold text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-100 dark:border-emerald-900/20"
+                          className="inline-flex items-center gap-0.5 text-seline-blue hover:underline font-semibold text-[10px] px-1.5 py-0.5 rounded bg-seline-wash border border-seline-pearl-border"
                         >
                           <span>ORCID</span>
                         </a>
@@ -281,16 +280,16 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
 
             {/* Abstract */}
             <div className="space-y-2">
-              <h4 className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-                <FileText className="h-3.5 w-3.5" />
+              <h4 className="text-xs font-semibold text-seline-slate uppercase tracking-wider flex items-center gap-1.5">
+                <FileText className="h-3.5 w-3.5 text-seline-blue" />
                 <span>Abstract</span>
               </h4>
               {abstractText ? (
-                <p className="text-sm text-slate-700 dark:text-slate-350 leading-relaxed text-justify bg-slate-50/30 dark:bg-slate-950/10 p-4 rounded-xl border border-slate-100 dark:border-slate-850">
+                <p className="text-sm text-seline-ink leading-relaxed text-justify bg-seline-cream p-4 rounded-seline-inputs border border-seline-pearl-border">
                   {abstractText}
                 </p>
               ) : (
-                <p className="text-sm text-slate-400 dark:text-slate-500 italic">
+                <p className="text-sm text-seline-slate italic">
                   No abstract deposited in Crossref metadata.
                 </p>
               )}
@@ -299,25 +298,25 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             {/* Meta Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {/* Publication Context */}
-              <div className="p-4 rounded-xl border border-slate-150 dark:border-slate-850 space-y-3">
-                <h5 className="text-xs font-bold text-indigo-500 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="p-4 rounded-seline-cards border border-seline-pearl-border space-y-3">
+                <h5 className="text-xs font-medium text-seline-blue uppercase tracking-wider flex items-center gap-1.5">
                   <BookOpen className="h-3.5 w-3.5" />
                   <span>Publication Context</span>
                 </h5>
-                <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                <ul className="text-xs space-y-2 text-seline-slate">
                   <li>
-                    <strong className="font-semibold text-slate-500 dark:text-slate-400">Journal:</strong>{" "}
+                    <strong className="font-medium text-seline-ink">Journal:</strong>{" "}
                     {article.journal}
                   </li>
                   {article.publisher && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Publisher:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Publisher:</strong>{" "}
                       {article.publisher}
                     </li>
                   )}
                   {(article.volume || article.issue || article.page || article.articleNumber) && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Metadata:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Metadata:</strong>{" "}
                       {article.volume && `Vol. ${article.volume}`}
                       {article.issue && `, No. ${article.issue}`}
                       {article.page && `, pp. ${article.page}`}
@@ -326,13 +325,13 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                   )}
                   {identifiers.length > 0 && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Identifiers:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Identifiers:</strong>{" "}
                       {identifiers.join(" | ")}
                     </li>
                   )}
                   {article.language && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Language:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Language:</strong>{" "}
                       {article.language.toUpperCase()}
                     </li>
                   )}
@@ -340,39 +339,39 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
               </div>
 
               {/* Citations & Dates */}
-              <div className="p-4 rounded-xl border border-slate-150 dark:border-slate-850 space-y-3">
-                <h5 className="text-xs font-bold text-emerald-500 uppercase tracking-wider flex items-center gap-1.5">
+              <div className="p-4 rounded-seline-cards border border-seline-pearl-border space-y-3">
+                <h5 className="text-xs font-medium text-seline-blue uppercase tracking-wider flex items-center gap-1.5">
                   <Quote className="h-3.5 w-3.5" />
                   <span>Citations & History</span>
                 </h5>
-                <ul className="text-xs space-y-2 text-slate-600 dark:text-slate-300">
+                <ul className="text-xs space-y-2 text-seline-slate">
                   <li className="flex items-center gap-3">
                     <span>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Crossref Cited By:</strong>{" "}
-                      <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-950/35 text-emerald-600 dark:text-emerald-400 font-bold rounded">
+                      <strong className="font-medium text-seline-ink">Crossref Cited By:</strong>{" "}
+                      <span className="px-2 py-0.5 bg-seline-wash text-seline-ink font-semibold rounded">
                         {article.citedByCount ?? 0}
                       </span>
                     </span>
                   </li>
                   <li>
-                    <strong className="font-semibold text-slate-500 dark:text-slate-400">Published Date:</strong>{" "}
+                    <strong className="font-medium text-seline-ink">Published Date:</strong>{" "}
                     {formatDate(article.publishedDate)}
                   </li>
                   {article.createdDate && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Record Created:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Record Created:</strong>{" "}
                       {formatDate(article.createdDate)}
                     </li>
                   )}
                   {article.depositedDate && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Last Deposited:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Last Deposited:</strong>{" "}
                       {formatDate(article.depositedDate)}
                     </li>
                   )}
                   {article.indexedDate && (
                     <li>
-                      <strong className="font-semibold text-slate-500 dark:text-slate-400">Last Indexed:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Last Indexed:</strong>{" "}
                       {formatDate(article.indexedDate)}
                     </li>
                   )}
@@ -382,31 +381,31 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
 
             {/* License Block */}
             {licenseUrl ? (
-              <div className="flex items-center justify-between p-4 bg-emerald-50/30 dark:bg-emerald-950/15 border border-emerald-100 dark:border-emerald-900/30 rounded-xl">
-                <div className="flex items-center gap-2 text-xs text-emerald-700 dark:text-emerald-300 font-medium">
-                  <BadgeCheck className="h-4 w-4 text-emerald-500" />
+              <div className="flex items-center justify-between p-4 bg-seline-cream border border-seline-pearl-border rounded-seline-cards">
+                <div className="flex items-center gap-2 text-xs text-seline-slate font-medium">
+                  <BadgeCheck className="h-4 w-4 text-seline-blue" />
                   <span>
-                    License: <strong className="font-bold text-emerald-800 dark:text-emerald-200">{getLicenseName(licenseUrl)}</strong>
+                    License: <strong className="font-semibold text-seline-ink">{getLicenseName(licenseUrl)}</strong>
                   </span>
                 </div>
                 <a
                   href={licenseUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1 text-xs text-emerald-600 hover:text-emerald-700 dark:text-emerald-450 dark:hover:text-emerald-350 font-bold underline underline-offset-2"
+                  className="inline-flex items-center gap-1 text-xs text-seline-blue hover:underline font-semibold"
                 >
                   <span>View License</span>
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               </div>
             ) : (
-              <div className="flex items-center justify-between p-4 bg-red-50/50 dark:bg-red-950/20 border border-red-150 dark:border-red-900/40 rounded-xl">
-                <div className="flex items-center gap-2 text-xs text-red-600 dark:text-red-400 font-bold">
-                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span>
+              <div className="flex items-center justify-between p-4 bg-seline-cream border border-seline-pearl-border rounded-seline-cards">
+                <div className="flex items-center gap-2 text-xs text-seline-slate font-semibold">
+                  <span className="w-2 h-2 rounded-full bg-seline-blue animate-pulse"></span>
                   <span>No license deposited in Crossref metadata</span>
                 </div>
-                <span className="text-[10px] text-red-650 dark:text-red-400 font-extrabold uppercase tracking-wider">
-                  Warning
+                <span className="text-[10px] text-seline-slate font-semibold uppercase tracking-wider">
+                  Info
                 </span>
               </div>
             )}
@@ -420,12 +419,12 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                 placeholder="Search citing articles by title, authors, or journal..."
                 value={citingSearchQuery}
                 onChange={(e) => setCitingSearchQuery(e.target.value)}
-                className="w-full px-3.5 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 text-slate-700 dark:text-slate-355 focus:outline-none focus:border-sky-500 focus:ring-1 focus:ring-sky-500 transition-all"
+                className="w-full px-3.5 py-2 text-xs rounded-seline-inputs border border-seline-warm-border bg-seline-white text-seline-ink focus:outline-none focus:border-seline-blue focus:ring-1 focus:ring-seline-blue transition-all h-[36px]"
               />
               {citingSearchQuery && (
                 <button
                   onClick={() => setCitingSearchQuery("")}
-                  className="px-3 py-2 text-xs font-semibold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-500 dark:text-slate-400 rounded-xl transition-all cursor-pointer"
+                  className="px-3 py-2 text-xs font-medium bg-seline-cream hover:bg-seline-pearl-border text-seline-slate rounded-seline-inputs transition-all cursor-pointer"
                 >
                   Clear
                 </button>
@@ -433,39 +432,39 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             </div>
 
             {/* Citations Count */}
-            <div className="text-xs font-bold text-slate-500 dark:text-slate-400">
+            <div className="text-xs font-semibold text-seline-slate">
               Crossref Cited-by: {citingArticles.length} citing articles found
             </div>
 
             {/* List / Table */}
             {sortedAndFilteredCitingArticles.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-12 text-center space-y-2 border border-dashed border-slate-200 dark:border-slate-800 rounded-xl bg-slate-50/20 dark:bg-slate-900/10">
-                <Quote className="h-8 w-8 text-slate-300 dark:text-slate-700" />
-                <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
+              <div className="flex flex-col items-center justify-center py-12 text-center space-y-2 border border-dashed border-seline-pearl-border rounded-seline-cards bg-seline-cream">
+                <Quote className="h-8 w-8 text-seline-soft-slate" />
+                <p className="text-xs font-medium text-seline-slate">
                   {citingArticles.length === 0
                     ? "No citing articles found in Crossref Cited-by for this DOI."
                     : "No matching citing articles found."}
                 </p>
               </div>
             ) : (
-              <div className="overflow-x-auto border border-slate-150 dark:border-slate-800 rounded-xl bg-white dark:bg-slate-900/10">
-                <table className="min-w-full divide-y divide-slate-150 dark:divide-slate-800 text-left text-[11px] leading-normal">
-                  <thead className="bg-slate-50 dark:bg-slate-950/40 font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider text-[9px]">
+              <div className="overflow-x-auto border border-seline-pearl-border rounded-seline-cards bg-seline-white">
+                <table className="min-w-full divide-y divide-seline-pearl-border text-left text-[11px] leading-normal">
+                  <thead className="bg-seline-cream font-medium text-seline-slate uppercase tracking-wider text-[9px]">
                     <tr>
                       <th className="px-4 py-3 text-center w-20">
                         <button
                           onClick={() => handleSort("year")}
-                          className="inline-flex items-center justify-center gap-1 hover:text-slate-800 dark:hover:text-white font-bold cursor-pointer focus:outline-none w-full"
+                          className="inline-flex items-center justify-center gap-1 hover:text-seline-blue font-medium cursor-pointer focus:outline-none w-full"
                         >
                           <span>Year</span>
                           {sortField === "year" ? (
                             sortDirection === "asc" ? (
-                              <ArrowUp className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                              <ArrowUp className="h-3 w-3 text-seline-blue" />
                             ) : (
-                              <ArrowDown className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                              <ArrowDown className="h-3 w-3 text-seline-blue" />
                             )
                           ) : (
-                            <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                            <ArrowUpDown className="h-3 w-3 text-seline-soft-slate" />
                           )}
                         </button>
                       </th>
@@ -473,17 +472,17 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                       <th className="px-4 py-3">
                         <button
                           onClick={() => handleSort("journal")}
-                          className="inline-flex items-center gap-1 hover:text-slate-800 dark:hover:text-white font-bold cursor-pointer focus:outline-none"
+                          className="inline-flex items-center gap-1 hover:text-seline-blue font-medium cursor-pointer focus:outline-none"
                         >
                           <span>Citing Journal</span>
                           {sortField === "journal" ? (
                             sortDirection === "asc" ? (
-                              <ArrowUp className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                              <ArrowUp className="h-3 w-3 text-seline-blue" />
                             ) : (
-                              <ArrowDown className="h-3 w-3 text-sky-600 dark:text-sky-400" />
+                              <ArrowDown className="h-3 w-3 text-seline-blue" />
                             )
                           ) : (
-                            <ArrowUpDown className="h-3 w-3 text-slate-400" />
+                            <ArrowUpDown className="h-3 w-3 text-seline-soft-slate" />
                           )}
                         </button>
                       </th>
@@ -492,23 +491,23 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                       <th className="px-4 py-3 text-right">Action</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/50 text-slate-700 dark:text-slate-350">
+                  <tbody className="divide-y divide-seline-pearl-border text-seline-ink">
                     {sortedAndFilteredCitingArticles.map((cit, idx) => (
-                      <tr key={idx} className="hover:bg-slate-50/30 dark:hover:bg-slate-900/10 transition-colors">
-                        <td className="px-4 py-3 text-center font-bold text-slate-800 dark:text-slate-200">
+                      <tr key={idx} className="hover:bg-seline-cream/50 transition-colors">
+                        <td className="px-4 py-3 text-center font-semibold text-seline-ink">
                           {cit.citingYear || "—"}
                         </td>
-                        <td className="px-4 py-3 font-semibold text-slate-850 dark:text-slate-100 break-words max-w-xs">
+                        <td className="px-4 py-3 font-semibold text-seline-ink break-words max-w-xs">
                           {cit.citingTitle}
                         </td>
-                        <td className="px-4 py-3 italic text-slate-500 dark:text-slate-400 break-words max-w-xs">
+                        <td className="px-4 py-3 italic text-seline-slate break-words max-w-xs">
                           {cit.citingJournal}
                         </td>
-                        <td className="px-4 py-3 text-slate-600 dark:text-slate-400 break-words max-w-xs">
+                        <td className="px-4 py-3 text-seline-slate break-words max-w-xs">
                           {cit.citingAuthors?.join(", ") || "Unknown Author"}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="inline-block px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-[9px] font-bold text-slate-500 dark:text-slate-450 uppercase tracking-wider">
+                          <span className="inline-block px-1.5 py-0.5 rounded bg-seline-cream border border-seline-pearl-border text-[9px] font-semibold text-seline-slate uppercase tracking-wider">
                             {cit.citingType?.replace("-", " ") || "Article"}
                           </span>
                         </td>
@@ -517,7 +516,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                             href={cit.citingDoiUrl}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 font-bold text-sky-600 hover:text-sky-700 dark:text-sky-400 dark:hover:text-sky-355 underline underline-offset-1"
+                            className="inline-flex items-center gap-1 font-semibold text-seline-blue hover:underline underline-offset-1"
                           >
                             <span>Open DOI</span>
                             <ExternalLink className="h-3 w-3" />
@@ -531,7 +530,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             )}
 
             {/* Caveat */}
-            <div className="p-3.5 rounded-xl border border-slate-150 dark:border-slate-800 bg-slate-50/30 dark:bg-slate-900/10 text-[10px] text-slate-500 dark:text-slate-450 leading-relaxed italic">
+            <div className="p-3.5 rounded-seline-inputs border border-seline-pearl-border bg-seline-cream text-[10px] text-seline-slate leading-relaxed italic">
               Crossref Cited-by reflects citation links matched from references deposited to Crossref. It may differ from Scopus, Web of Science, SINTA, Google Scholar, or Dimensions.
             </div>
           </div>
@@ -539,14 +538,14 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
       </div>
 
       {/* Footer Actions */}
-      <div className="flex items-center justify-between p-5 border-t border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40">
-        <div className="text-xs text-slate-500 dark:text-slate-400 font-mono select-all break-all pr-4">
+      <div className="flex items-center justify-between p-5 border-t border-seline-pearl-border bg-seline-cream">
+        <div className="text-xs text-seline-slate font-mono select-all break-all pr-4">
           DOI: {article.doi}
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => dialogRef.current?.close()}
-            className="px-4 py-2 text-xs font-semibold text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl transition-all cursor-pointer focus:outline-none"
+            className="px-4 py-2 text-xs font-semibold text-seline-slate hover:bg-seline-cream border border-seline-pearl-border rounded-full transition-all cursor-pointer focus:outline-none"
           >
             Close
           </button>
@@ -556,7 +555,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
               href={article.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-slate-600 hover:text-slate-800 dark:text-slate-300 dark:hover:text-white bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-850 rounded-xl transition-all focus:outline-none cursor-pointer"
+              className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-seline-slate hover:text-seline-ink bg-seline-white hover:bg-seline-cream border border-seline-pearl-border rounded-full transition-all focus:outline-none cursor-pointer"
             >
               <span>Open Full Text</span>
               <ExternalLink className="h-3.5 w-3.5" />
@@ -567,7 +566,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             href={article.doiUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-white bg-sky-600 hover:bg-sky-700 rounded-xl shadow-sm transition-all focus:outline-none cursor-pointer"
+            className="flex items-center gap-1.5 px-4 py-2 text-xs font-semibold text-seline-white bg-seline-blue hover:opacity-90 rounded-full transition-all focus:outline-none cursor-pointer"
           >
             <span>Open DOI</span>
             <ExternalLink className="h-3.5 w-3.5" />
