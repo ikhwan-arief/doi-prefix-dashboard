@@ -1,12 +1,12 @@
 {
   "prefix": "10.25077",
   "source": "Crossref Cited-by",
-  "totalCitationPairs": 6526,
-  "totalCitedArticlesWithCitations": 3397,
-  "totalUniqueCitingDois": 6050,
-  "totalUniqueCitingJournals": 2541,
+  "totalCitationPairs": 6561,
+  "totalCitedArticlesWithCitations": 3433,
+  "totalUniqueCitingDois": 6082,
+  "totalUniqueCitingJournals": 2553,
   "startDate": "2000-01-01",
   "endDate": "2030-12-31",
-  "lastSync": "2026-06-06T22:57:03.051Z",
+  "lastSync": "2026-06-12T23:40:42.340Z",
   "isConfigured": true
 }
