@@ -379,6 +379,14 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                       </span>
                     </span>
                   </li>
+                  <li className="flex items-center gap-3">
+                    <span>
+                      <strong className="font-medium text-seline-ink">Crossref References:</strong>{" "}
+                      <span className="px-2 py-0.5 bg-seline-wash text-seline-ink font-semibold rounded">
+                        {article.references?.length || article.referencesCount || 0}
+                      </span>
+                    </span>
+                  </li>
                   <li>
                     <strong className="font-medium text-seline-ink">Published Date:</strong>{" "}
                     {formatDate(article.publishedDate)}
