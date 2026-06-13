@@ -52,7 +52,6 @@ export type Article = {
     doi?: string;
     unstructured?: string;
   }[];
-  subjects?: string[];
 };
 
 export type DashboardSummary = {

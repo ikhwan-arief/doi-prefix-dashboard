@@ -141,7 +141,6 @@ function normalizeArticle(item) {
   const indexedDate = item.indexed ? getCrossrefDateString(item.indexed) : undefined;
   const createdDate = item.created ? getCrossrefDateString(item.created) : undefined;
   const license = item.license;
-  const subjects = item.subject || [];
 
   return {
     doi,
@@ -171,7 +170,6 @@ function normalizeArticle(item) {
     createdDate,
     license,
     references,
-    subjects,
   };
 }
 
