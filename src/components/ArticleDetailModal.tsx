@@ -367,13 +367,13 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                   )}
                   {article.year && (
                     <li>
-                      <strong className="font-medium text-seline-ink">Tahun Terbit:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Publication Year:</strong>{" "}
                       {article.year}
                     </li>
                   )}
                   {article.publishedDate && (
                     <li>
-                      <strong className="font-medium text-seline-ink">Tanggal Terbit:</strong>{" "}
+                      <strong className="font-medium text-seline-ink">Publication Date:</strong>{" "}
                       {formatDate(article.publishedDate)}
                     </li>
                   )}
