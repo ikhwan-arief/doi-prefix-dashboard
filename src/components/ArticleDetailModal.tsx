@@ -42,8 +42,9 @@ interface ArticleDetailModalProps {
 
 export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article, onClose, citationIndex }) => {
   const dialogRef = useRef<HTMLDialogElement>(null);
-  const [activeTab, setActiveTab] = useState<"details" | "citations">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "citations" | "references">("details");
   const [citingSearchQuery, setCitingSearchQuery] = useState<string>("");
+  const [refSearchQuery, setRefSearchQuery] = useState<string>("");
   const [sortField, setSortField] = useState<"year" | "journal" | null>("year");
   const [sortDirection, setSortDirection] = useState<"asc" | "desc">("desc");
 
@@ -54,6 +55,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
     setPrevArticleId(currentArticleId);
     setActiveTab("details");
     setCitingSearchQuery("");
+    setRefSearchQuery("");
     setSortField("year");
     setSortDirection("desc");
   }
@@ -150,6 +152,20 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
     return list;
   }, [citingArticles, citingSearchQuery, sortField, sortDirection]);
 
+  const filteredReferences = useMemo(() => {
+    if (!article || !article.references) return [];
+    let list = article.references;
+    if (refSearchQuery.trim()) {
+      const q = refSearchQuery.toLowerCase();
+      list = list.filter(
+        (r) =>
+          (r.unstructured || "").toLowerCase().includes(q) ||
+          (r.doi || "").toLowerCase().includes(q)
+      );
+    }
+    return list;
+  }, [article, refSearchQuery]);
+
   const handleSort = (field: "year" | "journal") => {
     if (sortField === field) {
       if (field === "year") {
@@ -241,6 +257,16 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
           }`}
         >
           Citing Articles ({citingArticles.length})
+        </button>
+        <button
+          onClick={() => setActiveTab("references")}
+          className={`flex-1 py-3 font-medium border-b-2 text-center transition-all cursor-pointer ${
+            activeTab === "references"
+              ? "border-seline-blue text-seline-blue bg-seline-white"
+              : "border-transparent text-seline-slate hover:text-seline-ink hover:bg-seline-cream"
+          }`}
+        >
+          References ({article.references?.length || article.referencesCount || 0})
         </button>
       </div>
 
@@ -410,7 +436,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
               </div>
             )}
           </div>
-        ) : (
+        ) : activeTab === "citations" ? (
           <div className="space-y-4">
             {/* Search filter for citing articles */}
             <div className="flex gap-2">
@@ -532,6 +558,87 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
             {/* Caveat */}
             <div className="p-3.5 rounded-seline-inputs border border-seline-pearl-border bg-seline-cream text-[10px] text-seline-slate leading-relaxed italic">
               Crossref Cited-by reflects citation links matched from references deposited to Crossref. It may differ from Scopus, Web of Science, SINTA, Google Scholar, or Dimensions.
+            </div>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            {/* Search filter for references */}
+            <div className="flex gap-2">
+              <input
+                type="text"
+                placeholder="Search references by author, title, journal, or DOI..."
+                value={refSearchQuery}
+                onChange={(e) => setRefSearchQuery(e.target.value)}
+                className="w-full px-3.5 py-2 text-xs rounded-seline-inputs border border-seline-warm-border bg-seline-white text-seline-ink focus:outline-none focus:border-seline-blue focus:ring-1 focus:ring-seline-blue transition-all h-[36px]"
+              />
+              {refSearchQuery && (
+                <button
+                  onClick={() => setRefSearchQuery("")}
+                  className="px-3 py-2 text-xs font-medium bg-seline-cream hover:bg-seline-pearl-border text-seline-slate rounded-seline-inputs transition-all cursor-pointer"
+                >
+                  Clear
+                </button>
+              )}
+            </div>
+
+            {/* References Count */}
+            <div className="text-xs font-semibold text-seline-slate">
+              Crossref: {article.references?.length || 0} references found
+            </div>
+
+            {/* References List */}
+            {filteredReferences.length === 0 ? (
+              <div className="flex flex-col items-center justify-center py-12 text-center space-y-2 border border-dashed border-seline-pearl-border rounded-seline-cards bg-seline-cream">
+                <BookOpen className="h-8 w-8 text-seline-soft-slate" />
+                <p className="text-xs font-medium text-seline-slate">
+                  {!article.references || article.references.length === 0
+                    ? "No references deposited in Crossref metadata for this article."
+                    : "No matching references found."}
+                </p>
+              </div>
+            ) : (
+              <div className="border border-seline-pearl-border rounded-seline-cards bg-seline-white divide-y divide-seline-pearl-border max-h-[40vh] overflow-y-auto">
+                {filteredReferences.map((ref, idx) => {
+                  const refIndex = (article.references?.indexOf(ref) ?? idx) + 1;
+                  return (
+                    <div key={ref.key || idx} className="p-4 hover:bg-seline-cream/30 transition-colors text-xs flex gap-3 items-start">
+                      <span className="text-seline-soft-slate font-mono text-[10px] w-6 text-right shrink-0 mt-0.5">
+                        [{refIndex}]
+                      </span>
+                      <div className="space-y-1.5 flex-1 min-w-0">
+                        {ref.unstructured ? (
+                          <p className="text-seline-ink leading-relaxed text-justify break-words">
+                            {ref.unstructured}
+                          </p>
+                        ) : (
+                          <p className="text-seline-slate italic">
+                            Unstructured citation text not available.
+                          </p>
+                        )}
+                        {ref.doi && (
+                          <div className="flex items-center gap-1.5">
+                            <span className="text-[10px] font-mono text-seline-slate shrink-0">DOI: {ref.doi}</span>
+                            <a
+                              href={`https://doi.org/${ref.doi}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-0.5 font-semibold text-seline-blue hover:underline"
+                            >
+                              <span className="text-[10px]">Open DOI</span>
+                              <ExternalLink className="h-2.5 w-2.5" />
+                            </a>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+
+            {/* Disclaimer */}
+            <div className="p-3.5 rounded-seline-inputs border border-seline-pearl-border bg-seline-cream text-[10px] text-seline-slate leading-relaxed italic">
+              References list is extracted from Crossref metadata deposited by the publisher. If the list is empty, it means the publisher did not deposit references metadata for this article or the data was not captured in the sync.
             </div>
           </div>
         )}
