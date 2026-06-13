@@ -395,6 +395,12 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                       {article.language.toUpperCase()}
                     </li>
                   )}
+                  {article.subjects && article.subjects.length > 0 && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">Subjects:</strong>{" "}
+                      {article.subjects.join(", ")}
+                    </li>
+                  )}
                 </ul>
               </div>
 
