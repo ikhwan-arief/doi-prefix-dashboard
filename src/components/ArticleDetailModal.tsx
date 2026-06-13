@@ -190,6 +190,7 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
   if (!article) return null;
 
   const abstractText = stripHtml(article.abstract);
+  const doiSuffix = article.doi.includes('/') ? article.doi.substring(article.doi.indexOf('/') + 1) : '';
 
   // Format ISSN/ISBN list
   const identifiers = [];
@@ -340,13 +341,46 @@ export const ArticleDetailModal: React.FC<ArticleDetailModalProps> = ({ article,
                       {article.publisher}
                     </li>
                   )}
-                  {(article.volume || article.issue || article.page || article.articleNumber) && (
+                  {article.volume && (
                     <li>
-                      <strong className="font-medium text-seline-ink">Metadata:</strong>{" "}
-                      {article.volume && `Vol. ${article.volume}`}
-                      {article.issue && `, No. ${article.issue}`}
-                      {article.page && `, pp. ${article.page}`}
-                      {article.articleNumber && `, Art. ${article.articleNumber}`}
+                      <strong className="font-medium text-seline-ink">Volume:</strong>{" "}
+                      {article.volume}
+                    </li>
+                  )}
+                  {article.issue && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">Issue:</strong>{" "}
+                      {article.issue}
+                    </li>
+                  )}
+                  {article.page && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">Pages:</strong>{" "}
+                      {article.page}
+                    </li>
+                  )}
+                  {article.articleNumber && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">Article Number:</strong>{" "}
+                      {article.articleNumber}
+                    </li>
+                  )}
+                  {article.year && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">Tahun Terbit:</strong>{" "}
+                      {article.year}
+                    </li>
+                  )}
+                  {article.publishedDate && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">Tanggal Terbit:</strong>{" "}
+                      {formatDate(article.publishedDate)}
+                    </li>
+                  )}
+                  {doiSuffix && (
+                    <li>
+                      <strong className="font-medium text-seline-ink">DOI Suffix:</strong>{" "}
+                      <span className="font-mono text-[10px] break-all select-all">{doiSuffix}</span>
                     </li>
                   )}
                   {identifiers.length > 0 && (
