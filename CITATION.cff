@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata from this file."
+title: "DOI Prefix Publication Dashboard"
+type: software
+authors:
+  - family-names: "Arief"
+    given-names: "Ikhwan"
+version: 1.0.0
+repository-code: "https://github.com/ikhwan-arief/doi-prefix-dashboard"
+url: "https://ikhwan-arief.github.io/doi-prefix-dashboard/"
+abstract: >-
+  A public static dashboard for visualizing, searching, and analyzing
+  academic publications registered under the Crossref DOI prefix 10.25077.
+keywords:
+  - DOI
+  - Crossref
+  - bibliometrics
+  - scholarly communication
+  - research dashboard
